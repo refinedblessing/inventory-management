@@ -1,5 +1,6 @@
-package com.sams.inventorymanagement.model;
+package com.sams.inventorymanagement.entities;
 
+import com.sams.inventorymanagement.entities.listeners.InventoryListener;
 import jakarta.persistence.*;
 
 /**
@@ -7,6 +8,7 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table(name = "inventory")
+@EntityListeners(InventoryListener.class)
 public class Inventory {
 
     /** Unique id for the inventory. */
@@ -93,4 +95,11 @@ public class Inventory {
         this.id = id;
     }
 
+    public Store getStore() {
+        return store;
+    }
+
+    public void setStore(Store store) {
+        this.store = store;
+    }
 }

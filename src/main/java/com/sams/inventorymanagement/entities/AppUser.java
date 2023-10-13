@@ -1,4 +1,4 @@
-package com.sams.inventorymanagement.model;
+package com.sams.inventorymanagement.entities;
 
 import com.sams.inventorymanagement.enums.UserRole;
 import jakarta.persistence.*;

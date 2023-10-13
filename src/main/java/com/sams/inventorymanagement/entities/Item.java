@@ -1,4 +1,4 @@
-package com.sams.inventorymanagement.model;
+package com.sams.inventorymanagement.entities;
 
 import jakarta.persistence.*;
 
@@ -30,7 +30,7 @@ public class Item {
     private Double price;
     /** The quantity of the item. */
     @Column(name = "quantity", nullable = false)
-    private int quantity;
+    private Integer quantity;
     /** The category of the item. */
     @ManyToOne
     @JoinColumn(name = "category_id")
@@ -59,7 +59,7 @@ public class Item {
      * Gets the quantity of the item.
      * @return The quantity.
      */
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
@@ -67,7 +67,7 @@ public class Item {
      * Sets the quantity of the item.
      * @param quantity The quantity.
      */
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
@@ -149,5 +149,13 @@ public class Item {
      */
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public List<Inventory> getInventories() {
+        return inventories;
+    }
+
+    public void setInventories(List<Inventory> inventories) {
+        this.inventories = inventories;
     }
 }
