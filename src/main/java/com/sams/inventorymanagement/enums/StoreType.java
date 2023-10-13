@@ -1,4 +1,4 @@
-package com.sams.inventorymanagement.model;
+package com.sams.inventorymanagement.enums;
 
 public enum StoreType {
     RETAIL,
