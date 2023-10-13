@@ -10,7 +10,6 @@ import java.util.List;
 @Entity
 @Table(name = "item")
 public class Item {
-
     /** Unique id for the item. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -151,11 +150,11 @@ public class Item {
         this.category = category;
     }
 
+    /**
+     * Gets the inventories for this item.
+     * @return The inventories.
+     */
     public List<Inventory> getInventories() {
         return inventories;
-    }
-
-    public void setInventories(List<Inventory> inventories) {
-        this.inventories = inventories;
     }
 }
