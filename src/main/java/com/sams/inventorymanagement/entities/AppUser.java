@@ -1,7 +1,9 @@
 package com.sams.inventorymanagement.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sams.inventorymanagement.enums.UserRole;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 
 /**
  * User for authentication with our website.
@@ -15,6 +17,7 @@ public class AppUser {
     @Column(name = "id", nullable = false)
     private Long id;
     /** The encrypted password of the user. */
+    @JsonIgnore
     @Column(name = "password", nullable = false, length = 1000)
     private String password;
     /** The email of the user. */
@@ -75,6 +78,7 @@ public class AppUser {
      * Gets the email.
      * @return The email.
      */
+    @Email(message = "Invalid Email")
     public String getEmail() {
         return email;
     }
@@ -91,6 +95,7 @@ public class AppUser {
      * Gets the encrypted password.
      * @return The password.
      */
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
