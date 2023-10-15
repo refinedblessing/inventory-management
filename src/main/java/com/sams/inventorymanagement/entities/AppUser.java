@@ -35,7 +35,7 @@ public class AppUser {
     @Column(name = "last_name", nullable = false)
     private String lastName;
     /** The user role(admin, store_manager, store_staff, user) */
-    @Column(name = "role")
+    @Column(name = "role", nullable = false)
     @NotNull(message = "Field can not be null")
     @Enumerated(EnumType.STRING)
     private UserRole role;

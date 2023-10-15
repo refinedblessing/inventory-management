@@ -23,7 +23,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item getItemById(Long id) {
-        // Use the built-in findById method provided by JpaRepository to find an item by ID
         return itemRepository.findById(id).orElse(null);
     }
 
@@ -48,7 +47,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item updateItem(Long id, Item updatedItem) {
-        // Add logic to validate and update the item
         if (itemRepository.existsById(id)) {
             updatedItem.setId(id); // Ensure the ID is set
             return itemRepository.save(updatedItem);

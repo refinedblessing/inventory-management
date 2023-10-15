@@ -1,6 +1,5 @@
 package com.sams.inventorymanagement.services;
 
-import com.sams.inventorymanagement.entities.Category;
 import com.sams.inventorymanagement.entities.Supplier;
 import com.sams.inventorymanagement.exceptions.EntityDuplicateException;
 import com.sams.inventorymanagement.repositories.SupplierRepository;
