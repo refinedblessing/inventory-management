@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sams.inventorymanagement.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * User for authentication with our website.
@@ -18,19 +19,24 @@ public class AppUser {
     private Long id;
     /** The encrypted password of the user. */
     @JsonIgnore
+    @NotNull(message = "Field can not be null")
     @Column(name = "password", nullable = false, length = 1000)
     private String password;
     /** The email of the user. */
+    @NotNull(message = "Field can not be null")
     @Column(name = "email", nullable = false, unique = true)
     private String email;
     /** The first name of the user. */
+    @NotNull(message = "Field can not be null")
     @Column(name = "first_name", nullable = false)
     private String firstName;
     /** The last name of the user. */
+    @NotNull(message = "Field can not be null")
     @Column(name = "last_name", nullable = false)
     private String lastName;
     /** The user role(admin, store_manager, store_staff, user) */
     @Column(name = "role")
+    @NotNull(message = "Field can not be null")
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
