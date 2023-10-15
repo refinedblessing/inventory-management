@@ -1,7 +1,7 @@
 package com.sams.inventorymanagement.controllers;
 
 import com.sams.inventorymanagement.entities.Item;
-import com.sams.inventorymanagement.exceptions.ItemNotFoundException;
+import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
 import com.sams.inventorymanagement.services.ItemService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class ItemController {
         Item item = itemService.getItemById(id);
 
         if(item == null)
-            throw new ItemNotFoundException("id:" + id);
+            throw new EntityNotFoundException("id: " + id);
 
         return item;
     }

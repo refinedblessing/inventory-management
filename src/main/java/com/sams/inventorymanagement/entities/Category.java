@@ -2,6 +2,7 @@ package com.sams.inventorymanagement.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,7 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private int id;
+    private Long id;
     /** The name of the category. */
     @Column(name = "name", nullable = false, unique = true)
     private String name;
@@ -31,6 +32,7 @@ public class Category {
     /** The supplier of this category of items. */
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "supplier_id")
+    @NotNull(message = "Include a Supplier")
+    @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
 }

@@ -1,5 +1,6 @@
 package com.sams.inventorymanagement.services;
 import com.sams.inventorymanagement.entities.Item;
+import com.sams.inventorymanagement.exceptions.EntityDuplicateException;
 import com.sams.inventorymanagement.repositories.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,16 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public Item getItemByName(String name) {
+        return itemRepository.findByName(name).orElse(null);
+    }
+
+    @Override
     public Item createItem(Item item) {
-        // Add any validation or business logic if needed
+        if (itemRepository.findByName(item.getName()).isPresent()) {
+            throw new EntityDuplicateException("Item with name '" + item.getName() + "' already exists.");
+        }
+
         return itemRepository.save(item);
     }
 
@@ -51,8 +60,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<Item> getAllItems() {
         // Retrieve all items from the repository
-        List<Item> items = itemRepository.findAll();
-        return items;
+        return itemRepository.findAll();
     }
 }
 

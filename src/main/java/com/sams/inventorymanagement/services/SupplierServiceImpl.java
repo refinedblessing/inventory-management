@@ -1,11 +1,14 @@
 package com.sams.inventorymanagement.services;
 
+import com.sams.inventorymanagement.entities.Category;
 import com.sams.inventorymanagement.entities.Supplier;
+import com.sams.inventorymanagement.exceptions.EntityDuplicateException;
 import com.sams.inventorymanagement.repositories.SupplierRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SupplierServiceImpl implements SupplierService {
@@ -18,13 +21,11 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     public Supplier createSupplier(Supplier supplier) {
-        // Implement create logic here
+        if (supplierRepository.findByName(supplier.getName()).isPresent()) {
+            throw new EntityDuplicateException("Supplier with name '" + supplier.getName() + "' already exists.");
+        }
 
-        // You can save the supplier using the repository
-        Supplier createdSupplier = supplierRepository.save(supplier);
-
-        // Return the created supplier
-        return createdSupplier;
+        return supplierRepository.save(supplier);
     }
 
     @Override
@@ -56,9 +57,14 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
+    public Supplier getSupplierByName(String name) {
+        Optional<Supplier> supplier = supplierRepository.findByName(name);
+        return supplier.orElse(null);
+    }
+
+    @Override
     public List<Supplier> getAllSuppliers() {
         // Retrieve all suppliers from the repository
-        List<Supplier> suppliers = supplierRepository.findAll();
-        return suppliers;
+        return supplierRepository.findAll();
     }
 }

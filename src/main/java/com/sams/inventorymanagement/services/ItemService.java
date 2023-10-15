@@ -1,4 +1,5 @@
 package com.sams.inventorymanagement.services;
+import com.sams.inventorymanagement.entities.Category;
 import com.sams.inventorymanagement.entities.Item;
 
 import java.util.List;
@@ -13,6 +14,8 @@ public interface ItemService {
     );
 
     Item getItemById(Long id);
+
+    Item getItemByName(String name);
 
     Item createItem(Item item);
 

@@ -29,7 +29,7 @@ public class Supplier {
     private Long id;
     /** The supplier name. */
     @NotNull(message = "Field can not be null")
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
     /** The supplier address. */
     @Column(name = "address")
@@ -41,7 +41,7 @@ public class Supplier {
     /** The supplier phone. */
     @NotNull(message = "Field can not be null")
     @Pattern(regexp = "^(\\+\\d{1,3})?\\d{10,14}$", message = "Invalid phone number format")
-    @Column(name = "phone", nullable = false, unique = true)
+    @Column(name = "phone", nullable = false)
     private String phone;
     /** The supplier's categories. */
     @OneToMany(mappedBy = "supplier")

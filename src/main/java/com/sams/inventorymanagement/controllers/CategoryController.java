@@ -1,7 +1,7 @@
 package com.sams.inventorymanagement.controllers;
 
 import com.sams.inventorymanagement.entities.Category;
-import com.sams.inventorymanagement.entities.Category;
+import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
 import com.sams.inventorymanagement.services.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +30,11 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable int id) {
+    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
         Category category = categoryService.getCategoryById(id);
 
-        if (category == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if(category == null)
+            throw new EntityNotFoundException("id: " + id);
 
         return new ResponseEntity<>(category, HttpStatus.OK);
     }
@@ -47,17 +47,23 @@ public class CategoryController {
                 .path("/{id}")
                 .buildAndExpand(savedCategory.getId())
                 .toUri();
+        System.out.println(location);
 
         return ResponseEntity.created(location).build();
     }
 
     @PutMapping("/{id}")
-    public Category updateCategory(@PathVariable int id, @Valid @RequestBody Category category) {
-        return categoryService.updateCategory(id, category);
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @Valid @RequestBody Category category) {
+        Category updatedCategory = categoryService.updateCategory(id, category);
+        if (updatedCategory != null) {
+            return ResponseEntity.ok(updatedCategory);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCategory(@PathVariable int id) {
+    public void deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
     }
 }

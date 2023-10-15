@@ -1,7 +1,7 @@
 package com.sams.inventorymanagement.controllers;
 
 import com.sams.inventorymanagement.entities.Supplier;
-import com.sams.inventorymanagement.exceptions.SupplierNotFoundException;
+import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
 import com.sams.inventorymanagement.services.SupplierService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,17 +57,15 @@ public class SupplierController {
             @RequestParam(required = false) String phone,
             @RequestParam(required = false) String categoryName,
             @RequestParam(required = false) String address) {
-        // Call the service to search for suppliers
-        List<Supplier> suppliers = supplierService.searchSuppliers(name, email, phone, categoryName, address);
-        return suppliers;
+        return supplierService.searchSuppliers(name, email, phone, categoryName, address);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Supplier> getSupplierById(@PathVariable Long id) {
         Supplier supplier = supplierService.getSupplierById(id);
 
-        if (supplier == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if(supplier == null)
+            throw new EntityNotFoundException("id: " + id);
 
         return new ResponseEntity<>(supplier, HttpStatus.OK);
     }
