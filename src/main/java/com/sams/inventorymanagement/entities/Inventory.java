@@ -2,6 +2,8 @@ package com.sams.inventorymanagement.entities;
 
 import com.sams.inventorymanagement.entities.listeners.InventoryListener;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,16 +23,19 @@ public class Inventory {
     private Long id;
     /** Store associated with the inventory. */
     @ManyToOne
-    @JoinColumn(name = "store_id")
+    @NotNull(message = "An inventory must have a store")
+    @JoinColumn(name = "store_id", nullable = false)
     private Store store;
     /** Item associated with the inventory.*/
     @ManyToOne
-    @JoinColumn(name = "item_id")
+    @NotNull(message = "An inventory must have an item")
+    @JoinColumn(name = "item_id", nullable = false)
     private Item item;
     /** The quantity in stock.*/
+    @Min(value = 1, message = "Inventory must have at least 1 quantity")
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
     /** The minimum quantity threshold: minimum quantity required in store.*/
-    @Column(name = "threshold")
+    @Column(name = "threshold", nullable = false)
     private Integer threshold = 0;
 }

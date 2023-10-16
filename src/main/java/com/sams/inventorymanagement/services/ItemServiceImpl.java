@@ -1,5 +1,6 @@
 package com.sams.inventorymanagement.services;
 import com.sams.inventorymanagement.entities.Item;
+import com.sams.inventorymanagement.entities.Supplier;
 import com.sams.inventorymanagement.exceptions.EntityDuplicateException;
 import com.sams.inventorymanagement.repositories.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ public class ItemServiceImpl implements ItemService {
     @Autowired
     private ItemRepository itemRepository;
 
-    /** Search name, short/long Description using the name field */
     @Override
     public List<Item> searchItemsByCriteria(String name, String description, Double minPrice, Double maxPrice, Integer minQuantity, Integer maxQuantity, String categoryName) {
         return itemRepository.findByNameContainingIgnoreCaseOrShortDescriptionContainingIgnoreCaseOrLongDescriptionContainingIgnoreCaseOrPriceBetweenOrQuantityBetweenOrCategoryNameContainingIgnoreCase(
@@ -29,6 +29,13 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item getItemByName(String name) {
         return itemRepository.findByName(name).orElse(null);
+    }
+
+    @Override
+    public Supplier getItemSupplier(Long id) {
+        Item item = getItemById(id);
+
+        return item.getCategory().getSupplier();
     }
 
     @Override
@@ -60,5 +67,6 @@ public class ItemServiceImpl implements ItemService {
         // Retrieve all items from the repository
         return itemRepository.findAll();
     }
+
 }
 

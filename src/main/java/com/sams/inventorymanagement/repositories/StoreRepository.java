@@ -18,7 +18,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
             "WHERE LOWER(s.name) LIKE %:name% " +
             "OR LOWER(s.address) LIKE %:address% " +
             "OR s.type = :storeType " +
-            "OR s.openingDate = :openingDate ")
+            "OR s.openingDate = :openingDate")
     List<Store> searchStoresByCriteria(
             String name,
             String address,

@@ -4,6 +4,7 @@ import com.sams.inventorymanagement.entities.Inventory;
 import jakarta.persistence.PreRemove;
 import jakarta.persistence.PostLoad;
 import jakarta.persistence.PostUpdate;
+import jakarta.persistence.PreUpdate;
 
 public class InventoryListener {
 
@@ -16,6 +17,11 @@ public class InventoryListener {
     @PostLoad
     public void postLoad(Inventory inventory) {
         // Handle logic after the entity is loaded (if needed)
+    }
+
+    @PreUpdate
+    public void preUpdate(Inventory inventory) {
+
     }
 
     @PostUpdate

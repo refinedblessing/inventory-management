@@ -58,4 +58,7 @@ public class Item {
     @JsonIgnore
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<Inventory> inventories;
+    /** The purchaseOrders that have this item. */
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    private List<PurchaseOrderItem> purchaseOrders;
 }
