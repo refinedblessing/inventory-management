@@ -64,9 +64,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> getAllItems() {
-        // Retrieve all items from the repository
         return itemRepository.findAll();
     }
-
 }
 

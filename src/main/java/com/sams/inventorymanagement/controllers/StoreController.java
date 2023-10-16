@@ -14,12 +14,28 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Controller for managing stores.
+ */
 @RestController
 @RequestMapping("/stores")
 public class StoreController {
+
+    /**
+     * Service for handling store-related operations.
+     */
     @Autowired
     private StoreService storeService;
-    
+
+    /**
+     * Search for stores based on various criteria.
+     *
+     * @param name         The name of the store to search for.
+     * @param address      The address of the store to search for.
+     * @param storeType    The type of store to search for.
+     * @param openingDate  The opening date of the store to search for.
+     * @return A list of stores matching the specified criteria.
+     */
     @GetMapping
     public List<Store> searchStores(
             @RequestParam(required = false) String name,
@@ -30,16 +46,28 @@ public class StoreController {
         return storeService.searchStoresByCriteria(name, address, storeType, openingDate);
     }
 
+    /**
+     * Retrieve a store by its unique identifier.
+     *
+     * @param id The ID of the store to retrieve.
+     * @return The store with the specified ID.
+     */
     @GetMapping("/{id}")
     public Store getStoreById(@PathVariable Long id) {
         Store store = storeService.getStoreById(id);
 
-        if(store == null)
+        if (store == null)
             throw new EntityNotFoundException("id: " + id);
 
         return store;
     }
 
+    /**
+     * Create a new store.
+     *
+     * @param store The store to create.
+     * @return The created store.
+     */
     @PostMapping
     public ResponseEntity<Store> createStore(@Valid @RequestBody Store store) {
         Store savedStore = storeService.createStore(store);
@@ -52,11 +80,23 @@ public class StoreController {
         return ResponseEntity.created(location).build();
     }
 
+    /**
+     * Update an existing store.
+     *
+     * @param id           The ID of the store to update.
+     * @param updatedStore The updated store information.
+     * @return The updated store.
+     */
     @PutMapping("/{id}")
     public Store updateStore(@PathVariable Long id, @Valid @RequestBody Store updatedStore) {
         return storeService.updateStore(id, updatedStore);
     }
 
+    /**
+     * Delete a store by its unique identifier.
+     *
+     * @param id The ID of the store to delete.
+     */
     @DeleteMapping("/{id}")
     public void deleteStore(@PathVariable Long id) {
         storeService.deleteStore(id);

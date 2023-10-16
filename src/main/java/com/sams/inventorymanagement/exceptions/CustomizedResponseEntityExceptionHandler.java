@@ -14,9 +14,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+/**
+ * Customized Response Entity Exception Handler for handling exceptions in the application.
+ */
 @ControllerAdvice
 public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
+    /**
+     * Handle exceptions of type Exception.
+     * @param ex The exception.
+     * @param request The web request.
+     * @return ResponseEntity containing error details.
+     * @throws Exception An exception.
+     */
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ErrorDetails> handleAllExceptions(Exception ex, WebRequest request) throws Exception {
         ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),
@@ -25,6 +35,12 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Handle exceptions of type EntityDuplicateException.
+     * @param ex The exception.
+     * @param request The web request.
+     * @return ResponseEntity containing error details.
+     */
     @ExceptionHandler(EntityDuplicateException.class)
     public final ResponseEntity<ErrorDetails> handleDuplicateCategoryException(EntityDuplicateException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),
@@ -32,6 +48,13 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
 
+    /**
+     * Handle exceptions of type EntityNotFoundException.
+     * @param ex The exception.
+     * @param request The web request.
+     * @return ResponseEntity containing error details.
+     * @throws Exception An exception.
+     */
     @ExceptionHandler(EntityNotFoundException.class)
     public final ResponseEntity<ErrorDetails> handleItemNotFoundException(Exception ex, WebRequest request) throws Exception {
         ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),
@@ -58,7 +81,6 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
                 ex.getMessage(),
                 fieldErrors.toString()
         );
-
 
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }

@@ -7,27 +7,49 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service implementation for managing inventories of items in stores.
+ */
 @Service
 public class InventoryServiceImpl {
     @Autowired
     private InventoryRepository inventoryRepository;
-    
-    //@Override
+
+    /**
+     * Creates a new inventory record for an item in a store.
+     *
+     * @param inventory The inventory to create.
+     * @return The created inventory.
+     */
     public Inventory createInventory(Inventory inventory) {
         return inventoryRepository.save(inventory);
     }
 
-    //@Override
+    /**
+     * Deletes an inventory record by its unique identifier.
+     *
+     * @param id The ID of the inventory to delete.
+     */
     public void deleteInventory(Long id) {
         inventoryRepository.deleteById(id);
     }
 
-    //@Override
+    /**
+     * Retrieves a list of all inventory records.
+     *
+     * @return A list of all inventory records.
+     */
     public List<Inventory> getAllInventories() {
         return inventoryRepository.findAll();
     }
 
-    //@Override
+    /**
+     * Updates an existing inventory record with new data.
+     *
+     * @param id             The ID of the inventory to update.
+     * @param updatedInventory The updated inventory data.
+     * @return The updated inventory or null if the specified inventory does not exist.
+     */
     public Inventory updateInventory(Long id, Inventory updatedInventory) {
         if (inventoryRepository.existsById(id)) {
             updatedInventory.setId(id); // Ensure the ID is set
@@ -37,12 +59,21 @@ public class InventoryServiceImpl {
         }
     }
 
-    //@Override
+    /**
+     * Retrieves a list of inventory records where the quantity is less than or equal to the threshold.
+     *
+     * @return A list of inventory records that have quantity less than or equal to the threshold.
+     */
     public List<Inventory> findInventoriesAtThreshold() {
         return inventoryRepository.findAllWhereQuantityLessThanOrEqualThreshold();
     }
 
-    //@Override
+    /**
+     * Retrieves an inventory record by its unique identifier.
+     *
+     * @param id The ID of the inventory to retrieve.
+     * @return The inventory record if found, or null if it doesn't exist.
+     */
     public Inventory getInventoryById(Long id) {
         return inventoryRepository.findById(id).orElse(null);
     }

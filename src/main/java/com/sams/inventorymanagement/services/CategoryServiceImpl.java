@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service implementation for managing product categories.
+ */
 @Service
 public class CategoryServiceImpl implements CategoryService {
 

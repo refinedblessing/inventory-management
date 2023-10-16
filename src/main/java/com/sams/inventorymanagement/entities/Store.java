@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * A store.
+ * Represents a store where items are available for stocking and sale.
  */
 @Entity
 @Getter
@@ -21,32 +21,59 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "store")
 public class Store {
-    /** Unique id for the store. */
+    /**
+     * Unique identifier for the store.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-    /** The name of the store. */
+
+    /**
+     * The name of the store. It cannot be null and must be unique.
+     */
     @Column(name = "name", nullable = false, unique = true)
+    @NotNull(message = "Name cannot be null")
     private String name;
-    /** The store address. */
+
+    /**
+     * The address of the store. It cannot be null.
+     */
     @Column(name = "address", nullable = false)
+    @NotNull(message = "Address cannot be null")
     private String address;
-    /** The store email. */
+
+    /**
+     * The email of the store.
+     */
     @Column(name = "email")
     private String email;
-    /** The store phone of the category. */
+
+    /**
+     * The phone number of the store. It cannot be null.
+     */
     @Column(name = "phone", nullable = false)
+    @NotNull(message = "Phone number cannot be null")
     private String phone;
-    /** The store type. */
+
+    /**
+     * The type of the store. It cannot be null.
+     */
     @Column(name = "type", nullable = false)
-    @NotNull(message = "Field can not be null")
+    @NotNull(message = "Type cannot be null")
     @Enumerated(EnumType.STRING)
     private StoreType type;
-    /** The inventories of the store. */
+
+    /**
+     * The list of inventories associated with this store.
+     */
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Inventory> inventories;
-    /** The opening date of the store. */
+
+    /**
+     * The opening date of the store. It cannot be null.
+     */
     @Column(name = "opening_date", nullable = false)
+    @NotNull(message = "Opening date cannot be null")
     private LocalDate openingDate;
 }

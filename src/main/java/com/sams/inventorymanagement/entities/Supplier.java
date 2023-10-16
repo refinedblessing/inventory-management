@@ -13,7 +13,7 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * Supplier of items, supplied via categories.
+ * Supplier of items, supplying via categories.
  */
 @Entity
 @NoArgsConstructor
@@ -22,28 +22,45 @@ import java.util.List;
 @Setter
 @Table(name = "supplier")
 public class Supplier {
-    /** Unique id for the supplier. */
+    /**
+     * Unique identifier for the supplier.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-    /** The supplier name. */
-    @NotNull(message = "Field can not be null")
+
+    /**
+     * The name of the supplier. It cannot be null and must be unique.
+     */
     @Column(name = "name", nullable = false, unique = true)
+    @NotNull(message = "Name cannot be null")
     private String name;
-    /** The supplier address. */
+
+    /**
+     * The address of the supplier.
+     */
     @Column(name = "address")
     private String address;
-    /** The supplier email. */
+
+    /**
+     * The email of the supplier. Should be a valid email address.
+     */
     @Email(message = "Invalid Email")
     @Column(name = "email")
     private String email;
-    /** The supplier phone. */
-    @NotNull(message = "Field can not be null")
-    @Pattern(regexp = "^(\\+\\d{1,3})?\\d{10,14}$", message = "Invalid phone number format")
+
+    /**
+     * The phone number of the supplier. It cannot be null and must match the specified pattern.
+     */
     @Column(name = "phone", nullable = false)
+    @NotNull(message = "Phone number cannot be null")
+    @Pattern(regexp = "^(\\+\\d{1,3})?\\d{10,14}$", message = "Invalid phone number format")
     private String phone;
-    /** The supplier's categories. */
+
+    /**
+     * The list of categories associated with this supplier.
+     */
     @OneToMany(mappedBy = "supplier")
     @JsonIgnore
     private List<Category> categories;
