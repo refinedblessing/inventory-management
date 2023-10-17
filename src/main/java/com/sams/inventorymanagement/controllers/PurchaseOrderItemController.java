@@ -2,6 +2,7 @@ package com.sams.inventorymanagement.controllers;
 
 import com.sams.inventorymanagement.entities.PurchaseOrderItem;
 import com.sams.inventorymanagement.services.PurchaseOrderItemService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,5 +64,17 @@ public class PurchaseOrderItemController {
     public ResponseEntity<List<PurchaseOrderItem>> getAllPurchaseOrderItems() {
         List<PurchaseOrderItem> purchaseOrderItems = purchaseOrderItemService.getAllPurchaseOrderItems();
         return ResponseEntity.ok(purchaseOrderItems);
+    }
+
+    /**
+     * Update an item by its ID.
+     *
+     * @param id The ID of the purchase order item to update.
+     * @param updatedPurchaseOrderItem The updated item.
+     * @return The updated purchase order item.
+     */
+    @PutMapping("/{id}")
+    public PurchaseOrderItem updatePurchaseOrderItem(@PathVariable Long id, @Valid @RequestBody PurchaseOrderItem updatedPurchaseOrderItem) {
+        return purchaseOrderItemService.updatePurchaseOrderItem(id, updatedPurchaseOrderItem);
     }
 }

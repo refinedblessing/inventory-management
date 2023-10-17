@@ -4,6 +4,7 @@ import com.sams.inventorymanagement.entities.PurchaseOrder;
 import com.sams.inventorymanagement.enums.OrderStatus;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Service interface for managing purchase orders.
@@ -23,7 +24,7 @@ public interface PurchaseOrderService {
      * @param id The ID of the purchase order.
      * @return The purchase order with the specified ID.
      */
-    PurchaseOrder getPurchaseOrderById(Long id);
+    PurchaseOrder getPurchaseOrderById(UUID id);
 
     /**
      * Get a list of all purchase orders.
@@ -37,14 +38,22 @@ public interface PurchaseOrderService {
      *
      * @param id The ID of the purchase order to be deleted.
      */
-    void deletePurchaseOrder(Long id);
+    void deletePurchaseOrder(UUID id);
 
     /**
-     * Update the status of a purchase order.
+     * Update a purchase order.
      *
-     * @param purchaseOrder The purchase order to be updated.
-     * @param newStatus     The new status to set for the purchase order.
+     * @param id The ID of the purchase order to be updated.
+     * @param updatedPurchaseOrder The updated purchase order.
      * @return The updated purchase order with the new status.
      */
-    PurchaseOrder updateOrderStatus(PurchaseOrder purchaseOrder, OrderStatus newStatus);
+    PurchaseOrder updatePurchaseOrder(UUID id, PurchaseOrder updatedPurchaseOrder);
+
+    /**
+     * Fulfill a purchase order and update item quantities.
+     *
+     * @param purchaseOrder The purchase order to fulfill.
+     * @return The fulfilled purchase order.
+     */
+    PurchaseOrder fulfillPurchaseOrder(PurchaseOrder purchaseOrder);
 }

@@ -71,7 +71,7 @@ public interface ItemService {
     /**
      * Updates an existing item with new data.
      *
-     * @param id          The ID of the item to update.
+     * @param id The ID of the item to update.
      * @param updatedItem The updated item data.
      * @return The updated item or null if the specified item does not exist.
      */

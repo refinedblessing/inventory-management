@@ -38,4 +38,14 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
     public List<PurchaseOrderItem> getAllPurchaseOrderItems() {
         return purchaseOrderItemRepository.findAll();
     }
+
+    @Override
+    public PurchaseOrderItem updatePurchaseOrderItem(Long id, PurchaseOrderItem updatedPurchaseOrderItem) {
+        if (purchaseOrderItemRepository.existsById(id)) {
+            updatedPurchaseOrderItem.setId(id); // Ensure the ID is set
+            return purchaseOrderItemRepository.save(updatedPurchaseOrderItem);
+        } else {
+            return null; // Return null if the item with the specified ID does not exist
+        }
+    }
 }

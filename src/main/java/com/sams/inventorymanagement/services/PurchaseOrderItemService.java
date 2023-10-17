@@ -47,4 +47,12 @@ public interface PurchaseOrderItemService {
      * @return A list of all purchase order items.
      */
     List<PurchaseOrderItem> getAllPurchaseOrderItems();
+
+    /**
+     * Updates an existing purchase order item with new data.
+     *
+     * @param id The ID of the purchase order item.
+     * @return The updated purchase order item or null if specified purchase order item is non-existent.
+     */
+    PurchaseOrderItem updatePurchaseOrderItem(Long id, PurchaseOrderItem updatedPurchaseOrderItem);
 }

@@ -1,7 +1,6 @@
 package com.sams.inventorymanagement.entities;
 
 import com.sams.inventorymanagement.enums.OrderStatus;
-import com.sams.inventorymanagement.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
