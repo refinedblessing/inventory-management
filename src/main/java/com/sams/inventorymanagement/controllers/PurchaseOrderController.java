@@ -41,7 +41,7 @@ public class PurchaseOrderController {
      * @return The created purchase order.
      */
     @PostMapping
-    public ResponseEntity<PurchaseOrder> createPurchaseOrder(@RequestBody PurchaseOrder purchaseOrder) {
+    public ResponseEntity<PurchaseOrder> createPurchaseOrder(@Valid @RequestBody PurchaseOrder purchaseOrder) {
         PurchaseOrder createdPurchaseOrder = purchaseOrderService.createPurchaseOrder(purchaseOrder);
         return ResponseEntity.ok(createdPurchaseOrder);
     }

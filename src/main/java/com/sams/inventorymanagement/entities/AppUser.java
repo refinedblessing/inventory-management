@@ -10,6 +10,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Represents an application user, including their unique identifier, password,
  * email, first name, last name, and user role.
@@ -42,7 +45,7 @@ public class AppUser {
      */
     @Email(message = "Email invalid")
     @NotNull(message = "Field can not be null")
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true, updatable = false)
     private String email;
 
     /**
@@ -60,10 +63,12 @@ public class AppUser {
     private String lastName;
 
     /**
-     * The role of the user (admin, store_manager, store_staff).
+     * The roles of the user (admin, store_manager, store_staff).
      */
     @Column(name = "role", nullable = false)
     @NotNull(message = "Field can not be null")
+    @ElementCollection(targetClass = UserRole.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+    private Set<UserRole> roles = new HashSet<>();
 }
