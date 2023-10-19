@@ -18,7 +18,7 @@ import java.util.List;
  * Controller for managing stores.
  */
 @RestController
-@RequestMapping("/stores")
+@RequestMapping("/api/stores")
 public class StoreController {
 
     /**

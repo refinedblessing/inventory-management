@@ -49,13 +49,11 @@ public class AppUserServiceImpl implements AppUserService {
         appUserRepository.deleteById(id);
     }
 
-    /**
-     * Get a user by their email.
-     *
-     * @param email The email of the user.
-     * @return The requested AppUser, or null if not found.
-     */
+    @Override
     public AppUser getUserByEmail(String email) {
         return appUserRepository.findByEmail(email).orElse(null);
     }
+
+    @Override
+    public boolean existsByEmail(String email) { return appUserRepository.existsByEmail(email); }
 }

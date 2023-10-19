@@ -16,7 +16,7 @@ import java.util.List;
  * Controller for managing items.
  */
 @RestController
-@RequestMapping("/items")
+@RequestMapping("/api/items")
 public class ItemController {
 
     /**

@@ -61,19 +61,24 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.
-                cors(withDefaults())
+        http
+                .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authEntryPointJwt))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .securityMatchers((matchers) -> matchers
+                        .requestMatchers("/api/**")
+                )
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/users/**").hasRole("ADMIN")
-                        .requestMatchers("/products/**").permitAll()
-                        .requestMatchers("/stores/**").permitAll()
-                        .anyRequest()
-                        .authenticated());
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/items/**").permitAll()
+                        .requestMatchers("/api/categories/**").permitAll()
+                        .requestMatchers("/api/test/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .anyRequest().authenticated()
+                );
         http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -83,7 +88,7 @@ public class SecurityConfiguration {
         Long MAX_AGE = 3600L;
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "future/production.url"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "PUT", "POST", "DELETE"));
         configuration.setMaxAge(MAX_AGE);
         configuration.setAllowCredentials(true);

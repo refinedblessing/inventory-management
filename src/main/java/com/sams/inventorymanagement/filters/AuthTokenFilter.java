@@ -20,8 +20,8 @@ import java.io.IOException;
 @Log4j2
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
-    private JwtUtil jwtUtil;
-    private UserDetailsServiceImpl userDetailsService;
+    private final JwtUtil jwtUtil;
+    private final UserDetailsServiceImpl userDetailsService;
 
     public AuthTokenFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService) {
         this.jwtUtil = jwtUtil;

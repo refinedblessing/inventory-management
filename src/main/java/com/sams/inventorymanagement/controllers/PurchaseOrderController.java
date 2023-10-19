@@ -1,7 +1,6 @@
 package com.sams.inventorymanagement.controllers;
 
 import com.sams.inventorymanagement.entities.PurchaseOrder;
-import com.sams.inventorymanagement.enums.OrderStatus;
 import com.sams.inventorymanagement.services.PurchaseOrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ import java.util.UUID;
  * Controller for managing purchase orders.
  */
 @RestController
-@RequestMapping("/purchase-orders")
+@RequestMapping("/api/purchase-orders")
 public class PurchaseOrderController {
 
     /**

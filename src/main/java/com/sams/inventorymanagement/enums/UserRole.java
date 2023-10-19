@@ -8,7 +8,7 @@ package com.sams.inventorymanagement.enums;
  * - USER: Regular user.
  */
 public enum UserRole {
-    ADMIN,
-    STORE_MANAGER,
-    STORE_STAFF
+    ROLE_ADMIN,
+    ROLE_STORE_MANAGER,
+    ROLE_STORE_STAFF
 }

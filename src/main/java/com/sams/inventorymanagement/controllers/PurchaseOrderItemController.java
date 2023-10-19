@@ -13,7 +13,7 @@ import java.util.List;
  * Controller for managing purchase order items.
  */
 @RestController
-@RequestMapping("/purchase-order-items")
+@RequestMapping("/api/purchase-order-items")
 public class PurchaseOrderItemController {
 
     /**

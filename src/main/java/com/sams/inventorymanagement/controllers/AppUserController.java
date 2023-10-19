@@ -13,7 +13,7 @@ import java.util.List;
  * REST controller for managing application users (AppUser entities).
  */
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class AppUserController {
     private final AppUserService appUserService;
 

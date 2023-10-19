@@ -24,6 +24,14 @@ public interface AppUserService {
     AppUser getUserById(Long id);
 
     /**
+     * Get a user by their email.
+     *
+     * @param email The unique identifier of the user.
+     * @return The requested AppUser, or null if not found.
+     */
+    AppUser getUserByEmail(String email);
+
+    /**
      * Create a new user.
      *
      * @param user The user to be created.
@@ -46,4 +54,6 @@ public interface AppUserService {
      * @param id The unique identifier of the user to be deleted.
      */
     void deleteUser(Long id);
+
+    boolean existsByEmail(String email);
 }

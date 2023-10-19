@@ -17,7 +17,7 @@ import java.util.List;
  * Controller for managing categories.
  */
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/api/categories")
 public class CategoryController {
 
     /**

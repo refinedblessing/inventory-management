@@ -17,7 +17,7 @@ import java.util.List;
  * Controller for managing suppliers.
  */
 @RestController
-@RequestMapping("/suppliers")
+@RequestMapping("/api/suppliers")
 public class SupplierController {
     private final SupplierService supplierService;
 

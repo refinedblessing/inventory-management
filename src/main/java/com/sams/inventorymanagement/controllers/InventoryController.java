@@ -16,7 +16,7 @@ import java.util.List;
  * Controller for managing inventory-related operations.
  */
 @RestController
-@RequestMapping("/inventories")
+@RequestMapping("/api/inventories")
 public class InventoryController {
 
     /**
