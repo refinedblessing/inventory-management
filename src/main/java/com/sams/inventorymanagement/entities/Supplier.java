@@ -3,6 +3,7 @@ package com.sams.inventorymanagement.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -35,6 +36,7 @@ public class Supplier {
      */
     @Column(name = "name", nullable = false, unique = true)
     @NotNull(message = "Name cannot be null")
+    @NotBlank
     private String name;
 
     /**

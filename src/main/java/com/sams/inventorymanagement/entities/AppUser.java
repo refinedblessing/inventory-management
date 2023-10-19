@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sams.inventorymanagement.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,13 +37,15 @@ public class AppUser {
      */
     @JsonIgnore
     @NotNull(message = "Field can not be null")
-    @Column(name = "password", nullable = false, length = 1000)
+    @NotBlank(message = "Field can not be blank")
+    @Column(name = "password", nullable = false)
     private String password;
 
     /**
      * The email of the user.
      */
     @Email(message = "Email invalid")
+    @NotBlank(message = "Field can not be blank")
     @NotNull(message = "Field can not be null")
     @Column(name = "email", nullable = false, unique = true, updatable = false)
     private String email;
@@ -50,13 +53,16 @@ public class AppUser {
     /**
      * The first name of the user.
      */
+    @NotBlank(message = "Field can not be blank")
     @NotNull(message = "Field can not be null")
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
+
     /**
      * The last name of the user.
      */
+    @NotBlank(message = "Field can not be blank")
     @NotNull(message = "Field can not be null")
     @Column(name = "last_name", nullable = false)
     private String lastName;

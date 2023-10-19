@@ -84,6 +84,7 @@ public class AuthController {
         user.setRoles(roles);
 
         AppUser createdUser = appUserService.createUser(user);
+
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 }

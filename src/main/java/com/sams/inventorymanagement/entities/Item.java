@@ -2,10 +2,7 @@ package com.sams.inventorymanagement.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,6 +29,7 @@ public class Item {
      * The name of the item. It should be between 2 and 255 characters in length.
      */
     @NotNull(message = "Item name cannot be null")
+    @NotBlank(message = "Item name cannot be blank")
     @Size(min = 1, max = 255, message = "Name should have a minimum of 2 characters and a maximum of 255")
     @Column(name = "name", nullable = false, unique = true)
     private String name;
@@ -40,6 +38,7 @@ public class Item {
      * The short description of the item. It should be between 10 and 255 characters in length.
      */
     @NotNull(message = "Short description cannot be null")
+    @NotBlank(message = "Short description cannot be blank")
     @Size(min = 10, max = 255, message = "Short description should have a minimum of 10 characters and a maximum of 255")
     @Column(name = "short_description", nullable = false)
     private String shortDescription;

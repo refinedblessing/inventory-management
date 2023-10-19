@@ -1,8 +1,10 @@
 package com.sams.inventorymanagement.config;
 
 import com.sams.inventorymanagement.filters.AuthTokenFilter;
+import com.sams.inventorymanagement.filters.ErrorResponseFilter;
 import com.sams.inventorymanagement.services.AuthEntryPointJwt;
 import com.sams.inventorymanagement.services.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -33,6 +35,8 @@ public class SecurityConfiguration {
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthEntryPointJwt authEntryPointJwt;
     private final AuthTokenFilter authTokenFilter;
+    @Autowired
+    private ErrorResponseFilter errorResponseFilter;
 
     public SecurityConfiguration(UserDetailsServiceImpl userDetailsService, AuthEntryPointJwt authEntryPointJwt, AuthTokenFilter authTokenFilter) {
         this.userDetailsService = userDetailsService;
@@ -62,6 +66,8 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .addFilterBefore(errorResponseFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception
@@ -79,7 +85,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 );
-        http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

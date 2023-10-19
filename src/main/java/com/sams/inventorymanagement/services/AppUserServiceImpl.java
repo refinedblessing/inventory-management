@@ -1,6 +1,8 @@
 package com.sams.inventorymanagement.services;
 
 import com.sams.inventorymanagement.entities.AppUser;
+import com.sams.inventorymanagement.exceptions.EntityDuplicateException;
+import com.sams.inventorymanagement.exceptions.ValidationException;
 import com.sams.inventorymanagement.repositories.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +33,15 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUser createUser(AppUser user) {
-        return appUserRepository.save(user);
+        if (appUserRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new EntityDuplicateException("Email already taken.");
+        }
+        try {
+            return appUserRepository.save(user);
+        } catch (ValidationException ex) {
+            throw new ValidationException(ex.getMessage());
+        }
+
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.sams.inventorymanagement.entities;
 
 import com.sams.inventorymanagement.enums.StoreType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,7 +34,8 @@ public class Store {
      * The name of the store. It cannot be null and must be unique.
      */
     @Column(name = "name", nullable = false, unique = true)
-    @NotNull(message = "Name cannot be null")
+    @NotNull(message = "Store name cannot be null")
+    @NotBlank(message = "Store name cannot be blank")
     private String name;
 
     /**
