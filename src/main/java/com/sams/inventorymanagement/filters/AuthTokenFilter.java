@@ -32,10 +32,19 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        if (isLoginOrSignupRequest(request)) {
+            // Skip token validation for login and signup
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
+            logger.error(request.getContextPath());
+            logger.error(request.getPathInfo());
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtil.validateJwtToken(jwt)) {
                 String username = jwtUtil.getUserNameFromJwtToken(jwt);
+//               TODO check for user in DB before doing this
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
                         userDetails.getAuthorities());
@@ -63,5 +72,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             return headerAuth.substring(7);
         }
         return null;
+    }
+
+    private boolean isLoginOrSignupRequest(HttpServletRequest request) {
+        // Check if the URL matches login and signup endpoints
+        String requestURI = request.getRequestURI();
+        return requestURI.equals("/api/auth/login") || requestURI.equals("/api/auth/signup");
     }
 }

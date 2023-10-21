@@ -49,7 +49,6 @@ public class Category {
      * The supplier of this category of items. It is required and cannot be null.
      */
     @ManyToOne
-    @JsonIgnore
     @NotNull(message = "A supplier must be associated with this category")
     @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;

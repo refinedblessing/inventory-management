@@ -123,7 +123,7 @@ public class SupplierController {
         List<Supplier> suppliers = supplierService.getAllSuppliers();
 
         if (suppliers.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Return 204 if no suppliers found
+            return new ResponseEntity<>(suppliers, HttpStatus.NO_CONTENT); // Return 204 if no suppliers found
         } else {
             return new ResponseEntity<>(suppliers, HttpStatus.OK); // Return the list of suppliers with 200 OK status
         }
