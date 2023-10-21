@@ -1,7 +1,10 @@
 package com.sams.inventorymanagement.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sams.inventorymanagement.dto.SignUpRequest;
 import com.sams.inventorymanagement.enums.UserRole;
+import com.sams.inventorymanagement.util.AuthorityMapper;
+import com.sams.inventorymanagement.services.UserDetailsImpl;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -11,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -58,6 +62,14 @@ public class AppUser {
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
+    /**
+     * The username of the user.
+     */
+    @NotBlank(message = "Field can not be blank")
+    @NotNull(message = "Field can not be null")
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
+
 
     /**
      * The last name of the user.
@@ -76,4 +88,27 @@ public class AppUser {
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<UserRole> roles;
+
+//    serving as DTO
+    public AppUser(UserDetailsImpl user) {
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.username = user.getUsername();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.roles = AuthorityMapper.mapAuthoritiesToUserRole(user.getAuthorities());
+    }
+
+    public AppUser(SignUpRequest user) {
+        this.email = user.getEmail();
+        this.username = user.getUsername();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.password = user.getPassword();
+
+//        TODO remove role addition from here
+        Set<UserRole> roles = new HashSet<>();
+        roles.add(UserRole.ROLE_ADMIN);
+        this.roles = roles;
+    }
 }

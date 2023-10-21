@@ -44,10 +44,11 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
      * @return ResponseEntity containing error details.
      */
     @ExceptionHandler(ValidationException.class)
-    public final ResponseEntity<ErrorDetails> handleDuplicateCategoryException(ValidationException ex, WebRequest request) {
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),
-                ex.getMessage(), request.getDescription(false));
-        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+    public final ResponseEntity<Object> handleDuplicateCategoryException(ValidationException ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getMessage());
+        ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), "Duplicate Entry", details);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -57,10 +58,11 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
      * @return ResponseEntity containing error details.
      */
     @ExceptionHandler(EntityDuplicateException.class)
-    public final ResponseEntity<ErrorDetails> handleDuplicateCategoryException(EntityDuplicateException ex, WebRequest request) {
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),
-                ex.getMessage(), request.getDescription(false));
-        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+    public final ResponseEntity<Object> handleDuplicateCategoryException(EntityDuplicateException ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getMessage());
+        ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), "Duplicate Entry", details);
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
     /**
@@ -71,11 +73,12 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
      * @throws Exception An exception.
      */
     @ExceptionHandler(EntityNotFoundException.class)
-    public final ResponseEntity<ErrorDetails> handleItemNotFoundException(Exception ex, WebRequest request) throws Exception {
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),
-                ex.getMessage(), request.getDescription(false));
+    public final ResponseEntity<Object> handleItemNotFoundException(Exception ex, WebRequest request) throws Exception {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getMessage());
+        ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), "Entity Not Found", details);
 
-        return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @Override
@@ -89,6 +92,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         for(ObjectError error : ex.getBindingResult().getAllErrors()) {
             details.add(error.getDefaultMessage());
         }
+
         ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), "Validation Failed.", details);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }

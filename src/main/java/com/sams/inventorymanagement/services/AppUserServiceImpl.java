@@ -33,9 +33,14 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUser createUser(AppUser user) {
-        if (appUserRepository.findByEmail(user.getEmail()).isPresent()) {
+        if (appUserRepository.existsByEmail(user.getEmail())) {
             throw new EntityDuplicateException("Email already taken.");
         }
+
+        if (appUserRepository.existsByUsername(user.getUsername())) {
+            throw new EntityDuplicateException("Username already taken.");
+        }
+
         try {
             return appUserRepository.save(user);
         } catch (ValidationException ex) {
@@ -65,5 +70,15 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
+    public AppUser getUserByUsername(String username) {
+        return appUserRepository.findByUsername(username).orElse(null);
+    }
+
+    @Override
     public boolean existsByEmail(String email) { return appUserRepository.existsByEmail(email); }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return appUserRepository.existsByUsername(username);
+    }
 }

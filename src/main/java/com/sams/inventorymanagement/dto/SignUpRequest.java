@@ -16,6 +16,9 @@ public class SignUpRequest {
     @NotBlank(message = "Last name is required")
     private String lastName;
 
+    @NotBlank(message = "Username is required")
+    private String username;
+
     @NotBlank(message = "Password is required")
     private String password;
 }

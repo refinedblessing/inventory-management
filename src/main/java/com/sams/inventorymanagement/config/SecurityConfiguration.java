@@ -4,7 +4,6 @@ import com.sams.inventorymanagement.filters.AuthTokenFilter;
 import com.sams.inventorymanagement.filters.ErrorResponseFilter;
 import com.sams.inventorymanagement.services.AuthEntryPointJwt;
 import com.sams.inventorymanagement.services.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -36,13 +35,13 @@ public class SecurityConfiguration {
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthEntryPointJwt authEntryPointJwt;
     private final AuthTokenFilter authTokenFilter;
-    @Autowired
-    private ErrorResponseFilter errorResponseFilter;
+    private final ErrorResponseFilter errorResponseFilter;
 
-    public SecurityConfiguration(UserDetailsServiceImpl userDetailsService, AuthEntryPointJwt authEntryPointJwt, AuthTokenFilter authTokenFilter) {
+    public SecurityConfiguration(UserDetailsServiceImpl userDetailsService, AuthEntryPointJwt authEntryPointJwt, AuthTokenFilter authTokenFilter, ErrorResponseFilter errorResponseFilter) {
         this.userDetailsService = userDetailsService;
         this.authEntryPointJwt = authEntryPointJwt;
         this.authTokenFilter = authTokenFilter;
+        this.errorResponseFilter = errorResponseFilter;
     }
 
     @Bean
