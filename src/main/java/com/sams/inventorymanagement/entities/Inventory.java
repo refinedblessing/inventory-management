@@ -51,6 +51,6 @@ public class Inventory {
     /**
      * The minimum quantity threshold: the minimum quantity required in the store. It is initially set to 0.
      */
-    @Column(name = "threshold", nullable = false)
+    @Column(name = "threshold")
     private Integer threshold = 0;
 }

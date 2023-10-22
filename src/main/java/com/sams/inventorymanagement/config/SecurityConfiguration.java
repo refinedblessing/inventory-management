@@ -4,6 +4,7 @@ import com.sams.inventorymanagement.filters.AuthTokenFilter;
 import com.sams.inventorymanagement.filters.ErrorResponseFilter;
 import com.sams.inventorymanagement.services.AuthEntryPointJwt;
 import com.sams.inventorymanagement.services.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -44,6 +45,9 @@ public class SecurityConfiguration {
         this.errorResponseFilter = errorResponseFilter;
     }
 
+    @Value("${allowed.origin}")
+    private String allowedOrigin;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -82,7 +86,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/items/**").permitAll()
                         .requestMatchers("/api/categories/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/").permitAll()
                         .anyRequest().authenticated()
                 );
 
@@ -94,13 +98,13 @@ public class SecurityConfiguration {
         Long MAX_AGE = 3600L;
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", allowedOrigin));
         configuration.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.AUTHORIZATION,
                 HttpHeaders.CONTENT_TYPE,
                 HttpHeaders.ACCEPT
         ));
-        configuration.setAllowedMethods(Arrays.asList("GET", "PUT", "POST", "DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "OPTIONS", "HEAD", "PUT", "POST", "DELETE"));
         configuration.setMaxAge(MAX_AGE);
         configuration.setAllowCredentials(true);
         source.registerCorsConfiguration("/**", configuration);

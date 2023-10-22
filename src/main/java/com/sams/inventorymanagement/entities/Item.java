@@ -78,12 +78,12 @@ public class Item {
      * The inventories that have this item.
      */
     @JsonIgnore
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "item")
     private List<Inventory> inventories;
 
     /**
      * The purchase orders that have this item.
      */
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "item")
     private List<PurchaseOrderItem> purchaseOrders;
 }

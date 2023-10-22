@@ -42,14 +42,13 @@ public class Category {
      * The list of items associated with this category.
      */
     @JsonIgnore
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category")
     private List<Item> items;
 
     /**
      * The supplier of this category of items. It is required and cannot be null.
      */
     @ManyToOne
-    @NotNull(message = "A supplier must be associated with this category")
-    @JoinColumn(name = "supplier_id", nullable = false)
+    @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 }

@@ -1,7 +1,12 @@
 package com.sams.inventorymanagement.exceptions;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.*;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,24 +25,6 @@ import java.util.List;
 @Log4j2
 public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
     /**
-     * Handle exceptions of type Exception.
-     * @param ex The exception.
-     * @param request The web request.
-     * @return ResponseEntity containing error details.
-     * @throws Exception An exception.
-     */
-    @ExceptionHandler(Exception.class)
-    public final ResponseEntity<ErrorDetails> handleAllExceptions(Exception ex, WebRequest request) throws Exception {
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),
-                ex.getMessage(), request.getDescription(false));
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        return new ResponseEntity<>(errorDetails, headers, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    /**
      * Handle exceptions of type ValidationException.
      * @param ex The exception.
      * @param request The web request.
@@ -48,6 +35,14 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         List<String> details = new ArrayList<>();
         details.add(ex.getMessage());
         ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), "Duplicate Entry", details);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public final ResponseEntity<Object> handleConstraintViolationException(ValidationException ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getMessage());
+        ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), "Violates Data Integrity", details);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
@@ -95,5 +90,30 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
         ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), "Validation Failed.", details);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handle exceptions of type Exception.
+     * @param ex The exception.
+     * @param request The web request.
+     * @return ResponseEntity containing error details.
+     * @throws Exception An exception.
+     */
+    @ExceptionHandler(Exception.class)
+    public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) throws Exception {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getMessage());
+
+        ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), "Server Error occurred", details);
+
+        if (ex instanceof ConstraintViolationException) {
+            error.setMessage("Constraint violation error occurred.");
+            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        } else if (ex instanceof DataIntegrityViolationException) {
+            error.setMessage("Data Integrity violation, this entity might be used somewhere else");
+            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        } else {
+            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
