@@ -26,14 +26,6 @@ public interface PurchaseOrderItemService {
     List<PurchaseOrderItem> getPurchaseOrderItemsByPurchaseOrderId(UUID purchaseOrderId);
 
     /**
-     * Get purchase order items for a given purchase order ID, grouped by category name.
-     *
-     * @param purchaseOrderId The ID of the purchase order.
-     * @return A list of purchase order items grouped by category name associated with the given purchase order.
-     */
-    List<PurchaseOrderItem> getPurchaseOrderItemsByPurchaseOrderIdGroupByCategoryName(UUID purchaseOrderId);
-
-    /**
      * Get a specific purchase order item by its ID.
      *
      * @param id The ID of the purchase order item.
@@ -47,6 +39,8 @@ public interface PurchaseOrderItemService {
      * @return A list of all purchase order items.
      */
     List<PurchaseOrderItem> getAllPurchaseOrderItems();
+
+    void deletePurchaseOrderItem(Long id);
 
     /**
      * Updates an existing purchase order item with new data.

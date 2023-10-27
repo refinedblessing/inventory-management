@@ -1,6 +1,7 @@
 package com.sams.inventorymanagement.services;
 
 import com.sams.inventorymanagement.entities.Category;
+import com.sams.inventorymanagement.entities.Supplier;
 import com.sams.inventorymanagement.exceptions.EntityDuplicateException;
 import com.sams.inventorymanagement.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,9 @@ import java.util.Optional;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+
+    @Autowired
+    private SupplierServiceImpl supplierService;
 
     @Autowired
     public CategoryServiceImpl(CategoryRepository categoryRepository) {
@@ -37,7 +41,8 @@ public class CategoryServiceImpl implements CategoryService {
         if (categoryRepository.findByName(category.getName()).isPresent()) {
             throw new EntityDuplicateException("Category with name '" + category.getName() + "' already exists.");
         }
-
+        Supplier supplier = supplierService.getSupplierById(category.getSupplier().getId());
+        category.setSupplier(supplier);
         return categoryRepository.save(category);
     }
 
@@ -45,6 +50,8 @@ public class CategoryServiceImpl implements CategoryService {
     public Category updateCategory(Long id, Category category) {
         if (categoryRepository.existsById(id)) {
             category.setId(id);
+            Supplier supplier = supplierService.getSupplierById(category.getSupplier().getId());
+            category.setSupplier(supplier);
             return categoryRepository.save(category);
         }
         return null;

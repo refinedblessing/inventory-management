@@ -1,6 +1,8 @@
 package com.sams.inventorymanagement.services;
 
 import com.sams.inventorymanagement.entities.Inventory;
+import com.sams.inventorymanagement.entities.Item;
+import com.sams.inventorymanagement.entities.Store;
 import com.sams.inventorymanagement.repositories.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -76,5 +78,18 @@ public class InventoryServiceImpl {
      */
     public Inventory getInventoryById(Long id) {
         return inventoryRepository.findById(id).orElse(null);
+    }
+
+    public List<Inventory> findInventoryByStore(Store store) {
+        return inventoryRepository.findByStore(store);
+    }
+
+    public List<Inventory> findInventoryByItem(Item item) {
+        return inventoryRepository.findByItem(item);
+    }
+
+
+    public Inventory findInventoryByStoreAndItem(Store store, Item item) {
+        return inventoryRepository.findByStoreAndItem(store, item).orElse(null);
     }
 }

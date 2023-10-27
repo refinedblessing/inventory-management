@@ -20,15 +20,13 @@ public class Item {
      * Unique id for the item.
      */
     @Id
-    @NotNull(message = "Item ID cannot be null")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
     /**
      * The name of the item. It should be between 2 and 255 characters in length.
      */
-    @NotNull(message = "Item name cannot be null")
     @NotBlank(message = "Item name cannot be blank")
     @Size(min = 1, max = 255, message = "Name should have a minimum of 2 characters and a maximum of 255")
     @Column(name = "name", nullable = false, unique = true)
@@ -37,16 +35,14 @@ public class Item {
     /**
      * The short description of the item. It should be between 10 and 255 characters in length.
      */
-    @NotNull(message = "Short description cannot be null")
     @NotBlank(message = "Short description cannot be blank")
     @Size(min = 10, max = 255, message = "Short description should have a minimum of 10 characters and a maximum of 255")
     @Column(name = "short_description", nullable = false)
     private String shortDescription;
 
     /**
-     * The long description of the item. It should have a minimum of 100 characters.
+     * The long description of the item.
      */
-    @Size(min = 100, message = "Long description should have a minimum of 100 characters")
     @Column(name = "long_description")
     private String longDescription;
 
@@ -54,7 +50,7 @@ public class Item {
      * The price of the item. It must be at least 0.01.
      */
     @NotNull(message = "Price cannot be null")
-    @DecimalMin(value = "0.01", message = "Price must be at least 0.01")
+    @DecimalMin(value = "0.001", message = "Price must be at least 0.01")
     @Column(name = "price", nullable = false)
     private Double price;
 
@@ -70,7 +66,7 @@ public class Item {
      * The category of the item. It cannot be null and is eagerly fetched.
      */
     @NotNull(message = "Category cannot be null")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
@@ -84,6 +80,7 @@ public class Item {
     /**
      * The purchase orders that have this item.
      */
+    @JsonIgnore
     @OneToMany(mappedBy = "item")
     private List<PurchaseOrderItem> purchaseOrders;
 }

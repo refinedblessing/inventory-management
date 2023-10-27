@@ -5,11 +5,8 @@ import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
 import com.sams.inventorymanagement.services.ItemService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 /**
@@ -37,7 +34,7 @@ public class ItemController {
      * @param categoryName The name of the category to search for.
      * @return List of items that match the search criteria.
      */
-    @GetMapping
+    @GetMapping("/search")
     public List<Item> searchItems(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String description,
@@ -48,6 +45,11 @@ public class ItemController {
             @RequestParam(required = false) String categoryName
     ) {
         return itemService.searchItemsByCriteria(name, description, minPrice, maxPrice, minQuantity, maxQuantity, categoryName);
+    }
+
+    @GetMapping
+    public List<Item> getAllItems() {
+        return itemService.getAllItems();
     }
 
     /**
@@ -73,15 +75,8 @@ public class ItemController {
      * @return The created item.
      */
     @PostMapping
-    public ResponseEntity<Item> createItem(@Valid @RequestBody Item item) {
-        Item savedItem = itemService.createItem(item);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedItem.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).build();
+    public Item createItem(@Valid @RequestBody Item item) {
+        return itemService.createItem(item);
     }
 
     /**

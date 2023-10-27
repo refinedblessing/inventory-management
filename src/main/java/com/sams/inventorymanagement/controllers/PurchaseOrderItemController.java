@@ -1,25 +1,27 @@
 package com.sams.inventorymanagement.controllers;
 
+import com.sams.inventorymanagement.dto.PurchaseOrderItemDTO;
 import com.sams.inventorymanagement.entities.PurchaseOrderItem;
-import com.sams.inventorymanagement.services.PurchaseOrderItemService;
+import com.sams.inventorymanagement.services.PurchaseOrderItemServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controller for managing purchase order items.
  */
 @RestController
-@RequestMapping("/api/purchase-order-items")
+@RequestMapping("/api/purchase-orders-items")
 public class PurchaseOrderItemController {
 
     /**
      * Service for handling purchase order item-related operations.
      */
-    private final PurchaseOrderItemService purchaseOrderItemService;
+    private final PurchaseOrderItemServiceImpl purchaseOrderItemService;
 
     /**
      * Constructs a new PurchaseOrderItemController with the provided service.
@@ -27,7 +29,7 @@ public class PurchaseOrderItemController {
      * @param purchaseOrderItemService The service for handling purchase order item operations.
      */
     @Autowired
-    public PurchaseOrderItemController(PurchaseOrderItemService purchaseOrderItemService) {
+    public PurchaseOrderItemController(PurchaseOrderItemServiceImpl purchaseOrderItemService) {
         this.purchaseOrderItemService = purchaseOrderItemService;
     }
 
@@ -38,9 +40,9 @@ public class PurchaseOrderItemController {
      * @return The created purchase order item.
      */
     @PostMapping
-    public ResponseEntity<PurchaseOrderItem> createPurchaseOrderItem(@Valid @RequestBody PurchaseOrderItem purchaseOrderItem) {
+    public PurchaseOrderItemDTO createPurchaseOrderItem(@Valid @RequestBody PurchaseOrderItem purchaseOrderItem) {
         PurchaseOrderItem createdPurchaseOrderItem = purchaseOrderItemService.createPurchaseOrderItem(purchaseOrderItem);
-        return ResponseEntity.ok(createdPurchaseOrderItem);
+        return purchaseOrderItemService.mapToDTO(createdPurchaseOrderItem);
     }
 
     /**
@@ -50,9 +52,9 @@ public class PurchaseOrderItemController {
      * @return The purchase order item with the specified ID.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<PurchaseOrderItem> getPurchaseOrderItemById(@PathVariable Long id) {
+    public PurchaseOrderItemDTO getPurchaseOrderItemById(@PathVariable Long id) {
         PurchaseOrderItem purchaseOrderItem = purchaseOrderItemService.getPurchaseOrderItemById(id);
-        return ResponseEntity.ok(purchaseOrderItem);
+        return purchaseOrderItemService.mapToDTO(purchaseOrderItem);
     }
 
     /**
@@ -61,9 +63,12 @@ public class PurchaseOrderItemController {
      * @return A list of all purchase order items.
      */
     @GetMapping
-    public ResponseEntity<List<PurchaseOrderItem>> getAllPurchaseOrderItems() {
+    public ResponseEntity<List<PurchaseOrderItemDTO>> getAllPurchaseOrderItems() {
         List<PurchaseOrderItem> purchaseOrderItems = purchaseOrderItemService.getAllPurchaseOrderItems();
-        return ResponseEntity.ok(purchaseOrderItems);
+        List<PurchaseOrderItemDTO> purchaseOrderItemsDTOS = purchaseOrderItems.stream()
+                .map(purchaseOrderItemService::mapToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(purchaseOrderItemsDTOS);
     }
 
     /**
@@ -74,7 +79,17 @@ public class PurchaseOrderItemController {
      * @return The updated purchase order item.
      */
     @PutMapping("/{id}")
-    public PurchaseOrderItem updatePurchaseOrderItem(@PathVariable Long id, @Valid @RequestBody PurchaseOrderItem updatedPurchaseOrderItem) {
-        return purchaseOrderItemService.updatePurchaseOrderItem(id, updatedPurchaseOrderItem);
+    public PurchaseOrderItemDTO updatePurchaseOrderItem(@PathVariable Long id, @Valid @RequestBody PurchaseOrderItem updatedPurchaseOrderItem) {
+        return purchaseOrderItemService.mapToDTO(purchaseOrderItemService.updatePurchaseOrderItem(id, updatedPurchaseOrderItem));
+    }
+
+    /**
+     * Delete an item by its ID.
+     *
+     * @param id The ID of the item to delete.
+     */
+    @DeleteMapping("/{id}")
+    public void deletePurchaseOrderItem(@PathVariable Long id) {
+        purchaseOrderItemService.deletePurchaseOrderItem(id);
     }
 }

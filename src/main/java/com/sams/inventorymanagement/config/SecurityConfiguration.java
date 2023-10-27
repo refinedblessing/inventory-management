@@ -26,6 +26,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -45,8 +46,8 @@ public class SecurityConfiguration {
         this.errorResponseFilter = errorResponseFilter;
     }
 
-    @Value("${allowed.origin}")
-    private String allowedOrigin;
+    @Value("${allowed.origins}")
+    private List<String> allowedOrigins;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -82,7 +83,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/**")
                 )
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/users/**", "/api/stores/**").hasRole("ADMIN")
                         .requestMatchers("/api/items/**").permitAll()
                         .requestMatchers("/api/categories/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
@@ -98,7 +99,8 @@ public class SecurityConfiguration {
         Long MAX_AGE = 3600L;
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", allowedOrigin));
+        configuration.setAllowedOriginPatterns(allowedOrigins);
+        configuration.addAllowedOrigin("http://localhost:3000");
         configuration.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.AUTHORIZATION,
                 HttpHeaders.CONTENT_TYPE,

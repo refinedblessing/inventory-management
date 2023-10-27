@@ -17,7 +17,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "purchase_order_item")
+@Table(name = "purchase_order_item", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"purchase_order_id", "item_id"})})
 public class PurchaseOrderItem {
     /**
      * Unique identifier for the purchase order item.

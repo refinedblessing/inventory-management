@@ -52,14 +52,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (Exception e) {
-            // Handle exceptions
-            log.error("Error while processing authentication: {}", e);
+            logger.error("Error while processing authentication: {}", e);
 
-            // You can choose to send a specific error response here
-            // For example, return a custom error JSON response
             response.setContentType("application/json");
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("Error: Internal Server Error");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Unable to Authenticate");
         }
     }
 

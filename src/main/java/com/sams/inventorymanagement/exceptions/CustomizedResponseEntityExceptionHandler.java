@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -104,14 +105,17 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         List<String> details = new ArrayList<>();
         details.add(ex.getMessage());
 
-        ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), "Server Error occurred", details);
+        ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), "An Error occurred", details);
 
         if (ex instanceof ConstraintViolationException) {
             error.setMessage("Constraint violation error occurred.");
             return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         } else if (ex instanceof DataIntegrityViolationException) {
-            error.setMessage("Data Integrity violation, this entity might be used somewhere else");
+            error.setMessage("Action violates Data Integrity");
             return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        } else if (ex instanceof BadCredentialsException) {
+            error.setMessage("Authentication Credentials rejected");
+            return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
         } else {
             return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }

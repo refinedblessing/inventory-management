@@ -1,11 +1,15 @@
 package com.sams.inventorymanagement.services;
 
+import com.sams.inventorymanagement.dto.PurchaseOrderDTO;
+import com.sams.inventorymanagement.dto.PurchaseOrderItemDTO;
 import com.sams.inventorymanagement.entities.PurchaseOrder;
 import com.sams.inventorymanagement.entities.PurchaseOrderItem;
 import com.sams.inventorymanagement.repositories.PurchaseOrderItemRepository;
+import com.sams.inventorymanagement.repositories.PurchaseOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,10 +18,59 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
     @Autowired
     private PurchaseOrderItemRepository purchaseOrderItemRepository;
 
+    @Autowired
+    private PurchaseOrderRepository purchaseOrderRepository;
+
     @Override
     public PurchaseOrderItem createPurchaseOrderItem(PurchaseOrderItem purchaseOrderItem) {
         resetQuantityToMaxAvailableQuantity(purchaseOrderItem);
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.getReferenceById(purchaseOrderItem.getPurchaseOrder().getId());
+        purchaseOrderItem.setPurchaseOrder(purchaseOrder);
+        handlePurchaseOrderItemChanges(purchaseOrderItem);
         return purchaseOrderItemRepository.save(purchaseOrderItem);
+    }
+
+    @Override
+    public void deletePurchaseOrderItem(Long id) {
+        PurchaseOrderItem purchaseOrderItem = purchaseOrderItemRepository.getReferenceById(id);
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.getReferenceById(purchaseOrderItem.getPurchaseOrder().getId());
+        int quantity = purchaseOrderItem.getQuantity();
+        Double price = purchaseOrderItem.getItem().getPrice();
+
+        // Update the PurchaseOrder fields
+        purchaseOrder.setLastUpdated(LocalDate.now());
+        purchaseOrder.setTotalQuantity(purchaseOrder.getTotalQuantity() - quantity);
+        purchaseOrder.setTotalPrice(purchaseOrder.getTotalPrice() - (quantity * price));
+
+        purchaseOrderItemRepository.deleteById(id);
+        purchaseOrderRepository.save(purchaseOrder);
+    }
+    @Override
+    public PurchaseOrderItem updatePurchaseOrderItem(Long id, PurchaseOrderItem updatedPurchaseOrderItem) {
+        if (purchaseOrderItemRepository.existsById(id)) {
+            updatedPurchaseOrderItem.setId(id); // Ensure the ID is set
+            return createPurchaseOrderItem(updatedPurchaseOrderItem);
+        } else {
+            return null; // Return null if the item with the specified ID does not exist
+        }
+    }
+
+    public void handlePurchaseOrderItemChanges(PurchaseOrderItem purchaseOrderItem) {
+        PurchaseOrder purchaseOrder = purchaseOrderItem.getPurchaseOrder();
+        // Calculate totals for the associated PurchaseOrder
+        int newTotalQuantity = 0;
+        double newTotalPrice = 0.0;
+
+        for (PurchaseOrderItem item : purchaseOrder.getPurchaseOrderItems()) {
+            newTotalQuantity += item.getQuantity();
+            newTotalPrice += item.getItem().getPrice() * item.getQuantity();
+        }
+
+        // Update the PurchaseOrder fields
+        purchaseOrder.setLastUpdated(LocalDate.now());
+        purchaseOrder.setTotalQuantity(newTotalQuantity);
+        purchaseOrder.setTotalPrice(newTotalPrice);
+        purchaseOrderRepository.save(purchaseOrder);
     }
 
     /**
@@ -31,6 +84,8 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
         int availableQuantity = purchaseOrderItem.getItem().getQuantity();
         int quantity = purchaseOrderItem.getQuantity();
 
+//        TODO throw error here, instead of resetting the quantity
+
         // Ensure that the quantity does not exceed the available quantity.
         purchaseOrderItem.setQuantity(Math.min(quantity, availableQuantity));
     }
@@ -38,11 +93,6 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
     @Override
     public List<PurchaseOrderItem> getPurchaseOrderItemsByPurchaseOrderId(UUID purchaseOrderId) {
         return purchaseOrderItemRepository.findByPurchaseOrderId(purchaseOrderId);
-    }
-
-    @Override
-    public List<PurchaseOrderItem> getPurchaseOrderItemsByPurchaseOrderIdGroupByCategoryName(UUID purchaseOrderId) {
-        return purchaseOrderItemRepository.findByPurchaseOrderIdGroupByCategoryName(purchaseOrderId);
     }
 
     @Override
@@ -56,14 +106,20 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
         return purchaseOrderItemRepository.findAll();
     }
 
-    @Override
-    public PurchaseOrderItem updatePurchaseOrderItem(Long id, PurchaseOrderItem updatedPurchaseOrderItem) {
-        if (purchaseOrderItemRepository.existsById(id)) {
-            updatedPurchaseOrderItem.setId(id); // Ensure the ID is set
-            resetQuantityToMaxAvailableQuantity(updatedPurchaseOrderItem);
-            return purchaseOrderItemRepository.save(updatedPurchaseOrderItem);
-        } else {
-            return null; // Return null if the item with the specified ID does not exist
-        }
+    public PurchaseOrderItem mapToEntity(PurchaseOrderItemDTO purchaseOrderItemDTO) {
+        PurchaseOrderItem purchaseOrderItem = new PurchaseOrderItem();
+        purchaseOrderItem.setId(purchaseOrderItemDTO.getId());
+        purchaseOrderItem.setItem(purchaseOrderItemDTO.getItem());
+        purchaseOrderItem.setQuantity(purchaseOrderItemDTO.getQuantity());
+
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.getReferenceById(purchaseOrderItemDTO.getPurchaseOrder().getId());
+        purchaseOrderItem.setPurchaseOrder(purchaseOrder);
+
+        return purchaseOrderItem;
+    }
+
+    public PurchaseOrderItemDTO mapToDTO(PurchaseOrderItem purchaseOrderItem) {
+        PurchaseOrderDTO purchaseOrderDTO = new PurchaseOrderDTO(purchaseOrderItem.getPurchaseOrder().getId());
+        return new PurchaseOrderItemDTO(purchaseOrderItem.getId(), purchaseOrderItem.getItem(), purchaseOrderItem.getQuantity(), purchaseOrderDTO);
     }
 }

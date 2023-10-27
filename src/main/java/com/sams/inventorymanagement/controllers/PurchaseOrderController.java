@@ -1,6 +1,9 @@
 package com.sams.inventorymanagement.controllers;
 
+import com.sams.inventorymanagement.dto.PurchaseOrderMaxDTO;
 import com.sams.inventorymanagement.entities.PurchaseOrder;
+import com.sams.inventorymanagement.enums.OrderStatus;
+import com.sams.inventorymanagement.services.PurchaseOrderItemServiceImpl;
 import com.sams.inventorymanagement.services.PurchaseOrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Controller for managing purchase orders.
@@ -22,6 +26,10 @@ public class PurchaseOrderController {
      * Service for handling purchase order-related operations.
      */
     private final PurchaseOrderService purchaseOrderService;
+
+    @Autowired
+    private PurchaseOrderItemServiceImpl purchaseOrderItemService;
+
 
     /**
      * Constructs a new PurchaseOrderController with the provided service.
@@ -40,9 +48,9 @@ public class PurchaseOrderController {
      * @return The created purchase order.
      */
     @PostMapping
-    public ResponseEntity<PurchaseOrder> createPurchaseOrder(@Valid @RequestBody PurchaseOrder purchaseOrder) {
+    public PurchaseOrderMaxDTO createPurchaseOrder(@Valid @RequestBody PurchaseOrder purchaseOrder) {
         PurchaseOrder createdPurchaseOrder = purchaseOrderService.createPurchaseOrder(purchaseOrder);
-        return ResponseEntity.ok(createdPurchaseOrder);
+        return PurchaseOrderMaxDTO.fromPurchaseOrder(createdPurchaseOrder);
     }
 
     /**
@@ -52,9 +60,9 @@ public class PurchaseOrderController {
      * @return The purchase order with the specified ID.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<PurchaseOrder> getPurchaseOrderById(@PathVariable UUID id) {
+    public PurchaseOrderMaxDTO getPurchaseOrderById(@PathVariable UUID id) {
         PurchaseOrder purchaseOrder = purchaseOrderService.getPurchaseOrderById(id);
-        return ResponseEntity.ok(purchaseOrder);
+        return PurchaseOrderMaxDTO.fromPurchaseOrder(purchaseOrder);
     }
 
     /**
@@ -63,9 +71,12 @@ public class PurchaseOrderController {
      * @return A list of all purchase orders.
      */
     @GetMapping
-    public ResponseEntity<List<PurchaseOrder>> getAllPurchaseOrders() {
+    public List<PurchaseOrderMaxDTO> getAllPurchaseOrders() {
         List<PurchaseOrder> purchaseOrders = purchaseOrderService.getAllPurchaseOrders();
-        return ResponseEntity.ok(purchaseOrders);
+
+        return purchaseOrders.stream()
+                .map(PurchaseOrderMaxDTO::fromPurchaseOrder)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -76,14 +87,35 @@ public class PurchaseOrderController {
      * @return ResponseEntity with a PurchaseOrder object and HTTP status indicating the result or error response.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<PurchaseOrder> updatePurchaseOrder(@PathVariable UUID id, @Valid @RequestBody PurchaseOrder purchaseOrder) {
+    public ResponseEntity<PurchaseOrderMaxDTO> updatePurchaseOrder(@PathVariable UUID id, @Valid @RequestBody PurchaseOrder purchaseOrder) {
         PurchaseOrder updatedPurchaseOrder = purchaseOrderService.updatePurchaseOrder(id, purchaseOrder);
 
+
         if (updatedPurchaseOrder != null) {
-            return new ResponseEntity<>(updatedPurchaseOrder, HttpStatus.OK);
+            return new ResponseEntity<>(PurchaseOrderMaxDTO.fromPurchaseOrder(updatedPurchaseOrder), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
+    @PutMapping("/{id}/status")
+    public ResponseEntity<PurchaseOrderMaxDTO> updatePurchaseOrderStatus(@PathVariable UUID id, OrderStatus status) {
+        PurchaseOrder updatedPurchaseOrder = purchaseOrderService.updatePurchaseOrderStatus(id, status);
+
+        if (updatedPurchaseOrder != null) {
+            return new ResponseEntity<>(PurchaseOrderMaxDTO.fromPurchaseOrder(updatedPurchaseOrder), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
+     * Delete an item by its ID.
+     *
+     * @param id The ID of the item to delete.
+     */
+    @DeleteMapping("/{id}")
+    public void deletePurchaseOrder(@PathVariable UUID id) {
+        purchaseOrderService.deletePurchaseOrder(id);
+    }
 }

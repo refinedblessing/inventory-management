@@ -58,7 +58,6 @@ public class AppUser {
      * The first name of the user.
      */
     @NotBlank(message = "Field can not be blank")
-    @NotNull(message = "Field can not be null")
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
@@ -66,7 +65,6 @@ public class AppUser {
      * The username of the user.
      */
     @NotBlank(message = "Field can not be blank")
-    @NotNull(message = "Field can not be null")
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
@@ -75,7 +73,6 @@ public class AppUser {
      * The last name of the user.
      */
     @NotBlank(message = "Field can not be blank")
-    @NotNull(message = "Field can not be null")
     @Column(name = "last_name", nullable = false)
     private String lastName;
 

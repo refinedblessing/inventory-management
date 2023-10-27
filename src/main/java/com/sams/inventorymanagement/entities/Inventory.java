@@ -1,11 +1,15 @@
 package com.sams.inventorymanagement.entities;
 
-import com.sams.inventorymanagement.entities.listeners.InventoryListener;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.util.Date;
 
 /**
  * Represents the inventory of a specific item in a particular store. This entity contains a unique identifier,
@@ -14,8 +18,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "inventory")
-@EntityListeners(InventoryListener.class)
+@Table(name = "inventory", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"store_id", "item_id"})})
+@NoArgsConstructor
+@AllArgsConstructor
 public class Inventory {
     /**
      * The unique identifier for the inventory.
@@ -53,4 +59,9 @@ public class Inventory {
      */
     @Column(name = "threshold")
     private Integer threshold = 0;
+
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_updated")
+    private Date lastUpdated;
 }

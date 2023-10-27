@@ -6,11 +6,8 @@ import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
 import com.sams.inventorymanagement.services.StoreService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -36,7 +33,7 @@ public class StoreController {
      * @param openingDate  The opening date of the store to search for.
      * @return A list of stores matching the specified criteria.
      */
-    @GetMapping
+    @GetMapping("/search")
     public List<Store> searchStores(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String address,
@@ -44,6 +41,11 @@ public class StoreController {
             @RequestParam(required = false) LocalDate openingDate
     ) {
         return storeService.searchStoresByCriteria(name, address, storeType, openingDate);
+    }
+
+    @GetMapping
+    public List<Store> getAllStores() {
+        return storeService.getAllStores();
     }
 
     /**
@@ -69,15 +71,8 @@ public class StoreController {
      * @return The created store.
      */
     @PostMapping
-    public ResponseEntity<Store> createStore(@Valid @RequestBody Store store) {
-        Store savedStore = storeService.createStore(store);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedStore.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).build();
+    public Store createStore(@Valid @RequestBody Store store) {
+        return storeService.createStore(store);
     }
 
     /**

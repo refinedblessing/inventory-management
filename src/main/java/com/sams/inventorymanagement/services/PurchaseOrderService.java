@@ -45,15 +45,17 @@ public interface PurchaseOrderService {
      *
      * @param id The ID of the purchase order to be updated.
      * @param updatedPurchaseOrder The updated purchase order.
-     * @return The updated purchase order with the new status.
+     * @return The updated purchase order.
      */
     PurchaseOrder updatePurchaseOrder(UUID id, PurchaseOrder updatedPurchaseOrder);
 
     /**
-     * Fulfill a purchase order and update item quantities.
+     * Update a purchase order.
      *
-     * @param purchaseOrder The purchase order to fulfill.
-     * @return The fulfilled purchase order.
+     * @param id The ID of the purchase order to be updated.
+     * @param status The new status.
+     * @return The updated purchase order with the new status.
      */
-    PurchaseOrder fulfillPurchaseOrder(PurchaseOrder purchaseOrder);
+    PurchaseOrder updatePurchaseOrderStatus(UUID id, OrderStatus status);
+
 }

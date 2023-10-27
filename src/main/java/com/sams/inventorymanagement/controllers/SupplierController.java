@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 /**
@@ -38,15 +36,8 @@ public class SupplierController {
      * @return The created supplier.
      */
     @PostMapping
-    public ResponseEntity<Supplier> createSupplier(@Valid @RequestBody Supplier supplier) {
-        Supplier savedSupplier = supplierService.createSupplier(supplier);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedSupplier.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).build();
+    public Supplier createSupplier(@Valid @RequestBody Supplier supplier) {
+        return supplierService.createSupplier(supplier);
     }
 
     /**
@@ -88,6 +79,7 @@ public class SupplierController {
      * @param address      The address of the supplier to search for.
      * @return A list of suppliers matching the specified criteria.
      */
+    @GetMapping("/search")
     public List<Supplier> searchSuppliers(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email,
@@ -119,13 +111,7 @@ public class SupplierController {
      * @return A list of all suppliers, or a no-content response if none found.
      */
     @GetMapping
-    public ResponseEntity<List<Supplier>> getAllSuppliers() {
-        List<Supplier> suppliers = supplierService.getAllSuppliers();
-
-        if (suppliers.isEmpty()) {
-            return new ResponseEntity<>(suppliers, HttpStatus.NO_CONTENT); // Return 204 if no suppliers found
-        } else {
-            return new ResponseEntity<>(suppliers, HttpStatus.OK); // Return the list of suppliers with 200 OK status
-        }
+    public List<Supplier> getAllSuppliers() {
+        return supplierService.getAllSuppliers();
     }
 }

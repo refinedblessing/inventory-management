@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +27,6 @@ public class PurchaseOrder {
      * The unique identifier for the purchase order.
      */
     @Id
-    @org.hibernate.validator.constraints.UUID(message = "Not a UUID")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
@@ -33,6 +34,7 @@ public class PurchaseOrder {
      * The store associated with this purchase order.
      */
     @ManyToOne
+    @NotNull(message = "A store is required")
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
@@ -40,20 +42,52 @@ public class PurchaseOrder {
      * The list of purchase order items included in this purchase order.
      */
     @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PurchaseOrderItem> purchaseOrderItems;
+    private List<PurchaseOrderItem> purchaseOrderItems = new ArrayList<>();
 
     /**
      * The total quantity of items in this purchase order.
      */
-    @Column(name = "total_quantity", nullable = false)
-    private Integer totalQuantity;
+    @Column(name = "total_quantity")
+    private Integer totalQuantity = 0;
+
+    @Column(name = "total_price")
+    private Double totalPrice = 0.0;
 
     /**
      * The status of this purchase order.
      */
-    @Column(name = "status", nullable = false)
-    @NotNull(message = "Field can not be null")
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.PENDING;
+
+
+    @Column(name = "last_updated")
+    private LocalDate lastUpdated;
+
+//    @PostPersist
+//    @PostUpdate
+//    @PostRemove
+//    private void updateTotals() {
+//        int newTotalQuantity = 0;
+//        double newTotalPrice = 0.0;
+//
+//        for (PurchaseOrderItem item : purchaseOrderItems) {
+//            newTotalQuantity += item.getQuantity();
+//            newTotalPrice += item.getItem().getPrice() * item.getQuantity();
+//        }
+//
+//        setLastUpdated(LocalDate.now());
+//        setTotalQuantity(newTotalQuantity);
+//        setTotalPrice(newTotalPrice);
+//
+//
+//    }
+//
+//    @PreUpdate
+//    public void preUpdate() {
+//        if (status.equals(OrderStatus.DELIVERED)) {
+//            throw new InvalidStatusTransitionException("Purchase order is already delivered and cannot be updated.");
+//        }
+//    }
 }
 

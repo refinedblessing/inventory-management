@@ -1,5 +1,6 @@
 package com.sams.inventorymanagement.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sams.inventorymanagement.enums.StoreType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -67,15 +68,16 @@ public class Store {
     private StoreType type;
 
     /**
-     * The list of inventories associated with this store.
-     */
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Inventory> inventories;
-
-    /**
      * The opening date of the store. It cannot be null.
      */
     @Column(name = "opening_date", nullable = false)
     @NotNull(message = "Opening date cannot be null")
     private LocalDate openingDate;
+
+    /**
+     * The list of inventories associated with this store.
+     */
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Inventory> inventories;
 }

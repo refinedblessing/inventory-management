@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 /**
@@ -23,17 +21,8 @@ public class CategoryController {
     /**
      * Service for handling category-related operations.
      */
-    private final CategoryService categoryService;
-
-    /**
-     * Constructs a new CategoryController.
-     *
-     * @param categoryService The category service to be injected.
-     */
     @Autowired
-    public CategoryController(CategoryService categoryService) {
-        this.categoryService = categoryService;
-    }
+    private CategoryService categoryService;
 
     /**
      * Get a list of all categories.
@@ -68,16 +57,8 @@ public class CategoryController {
      * @return The created category.
      */
     @PostMapping
-    public ResponseEntity<Category> createCategory(@Valid @RequestBody Category category) {
-        Category savedCategory = categoryService.createCategory(category);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedCategory.getId())
-                .toUri();
-        System.out.println(location);
-
-        return ResponseEntity.created(location).build();
+    public Category createCategory(@Valid @RequestBody Category category) {
+        return categoryService.createCategory(category);
     }
 
     /**

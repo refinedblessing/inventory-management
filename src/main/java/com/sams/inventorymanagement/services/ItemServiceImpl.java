@@ -1,4 +1,5 @@
 package com.sams.inventorymanagement.services;
+import com.sams.inventorymanagement.entities.Category;
 import com.sams.inventorymanagement.entities.Item;
 import com.sams.inventorymanagement.entities.Supplier;
 import com.sams.inventorymanagement.exceptions.EntityDuplicateException;
@@ -13,6 +14,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Autowired
     private ItemRepository itemRepository;
+
+    @Autowired
+    private CategoryServiceImpl categoryService;
 
     @Override
     public List<Item> searchItemsByCriteria(String name, String description, Double minPrice, Double maxPrice, Integer minQuantity, Integer maxQuantity, String categoryName) {
@@ -43,7 +47,8 @@ public class ItemServiceImpl implements ItemService {
         if (itemRepository.findByName(item.getName()).isPresent()) {
             throw new EntityDuplicateException("Item with name '" + item.getName() + "' already exists.");
         }
-
+        Category category = categoryService.getCategoryById(item.getCategory().getId());
+        item.setCategory(category);
         return itemRepository.save(item);
     }
 
@@ -55,7 +60,10 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item updateItem(Long id, Item updatedItem) {
         if (itemRepository.existsById(id)) {
-            updatedItem.setId(id); // Ensure the ID is set
+            updatedItem.setId(id);
+
+            Category category = categoryService.getCategoryById(updatedItem.getCategory().getId());
+            updatedItem.setCategory(category);
             return itemRepository.save(updatedItem);
         } else {
             return null; // Return null if the item with the specified ID does not exist
