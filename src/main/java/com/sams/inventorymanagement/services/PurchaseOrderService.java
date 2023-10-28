@@ -1,7 +1,6 @@
 package com.sams.inventorymanagement.services;
 
 import com.sams.inventorymanagement.entities.PurchaseOrder;
-import com.sams.inventorymanagement.enums.OrderStatus;
 
 import java.util.List;
 import java.util.UUID;
@@ -48,14 +47,4 @@ public interface PurchaseOrderService {
      * @return The updated purchase order.
      */
     PurchaseOrder updatePurchaseOrder(UUID id, PurchaseOrder updatedPurchaseOrder);
-
-    /**
-     * Update a purchase order.
-     *
-     * @param id The ID of the purchase order to be updated.
-     * @param status The new status.
-     * @return The updated purchase order with the new status.
-     */
-    PurchaseOrder updatePurchaseOrderStatus(UUID id, OrderStatus status);
-
 }

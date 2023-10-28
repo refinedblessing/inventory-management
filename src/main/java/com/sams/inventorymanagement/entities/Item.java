@@ -57,10 +57,8 @@ public class Item {
     /**
      * The quantity of the item. It should be at least 1.
      */
-    @NotNull(message = "Quantity cannot be null")
-    @Min(value = 1, message = "You must have at least 1 item")
     @Column(name = "quantity", nullable = false)
-    private Integer quantity;
+    private Integer quantity = 0;
 
     /**
      * The category of the item. It cannot be null and is eagerly fetched.

@@ -2,7 +2,6 @@ package com.sams.inventorymanagement.controllers;
 
 import com.sams.inventorymanagement.dto.PurchaseOrderMaxDTO;
 import com.sams.inventorymanagement.entities.PurchaseOrder;
-import com.sams.inventorymanagement.enums.OrderStatus;
 import com.sams.inventorymanagement.services.PurchaseOrderItemServiceImpl;
 import com.sams.inventorymanagement.services.PurchaseOrderService;
 import jakarta.validation.Valid;
@@ -80,7 +79,7 @@ public class PurchaseOrderController {
     }
 
     /**
-     * Update the status of a purchase order with the specified ID.
+     * Update the store and status of a purchase order with the specified ID.
      *
      * @param id        The ID of the purchase order to update.
      * @param purchaseOrder The purchase order to be updated.
@@ -89,18 +88,6 @@ public class PurchaseOrderController {
     @PutMapping("/{id}")
     public ResponseEntity<PurchaseOrderMaxDTO> updatePurchaseOrder(@PathVariable UUID id, @Valid @RequestBody PurchaseOrder purchaseOrder) {
         PurchaseOrder updatedPurchaseOrder = purchaseOrderService.updatePurchaseOrder(id, purchaseOrder);
-
-
-        if (updatedPurchaseOrder != null) {
-            return new ResponseEntity<>(PurchaseOrderMaxDTO.fromPurchaseOrder(updatedPurchaseOrder), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @PutMapping("/{id}/status")
-    public ResponseEntity<PurchaseOrderMaxDTO> updatePurchaseOrderStatus(@PathVariable UUID id, OrderStatus status) {
-        PurchaseOrder updatedPurchaseOrder = purchaseOrderService.updatePurchaseOrderStatus(id, status);
 
         if (updatedPurchaseOrder != null) {
             return new ResponseEntity<>(PurchaseOrderMaxDTO.fromPurchaseOrder(updatedPurchaseOrder), HttpStatus.OK);

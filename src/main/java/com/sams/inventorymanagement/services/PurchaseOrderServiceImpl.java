@@ -4,6 +4,8 @@ import com.sams.inventorymanagement.entities.*;
 import com.sams.inventorymanagement.enums.OrderStatus;
 import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
 import com.sams.inventorymanagement.exceptions.InvalidStatusTransitionException;
+import com.sams.inventorymanagement.repositories.InventoryRepository;
+import com.sams.inventorymanagement.repositories.ItemRepository;
 import com.sams.inventorymanagement.repositories.PurchaseOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,18 +18,14 @@ import java.util.UUID;
  */
 @Service
 public class PurchaseOrderServiceImpl implements PurchaseOrderService {
-    private final PurchaseOrderRepository purchaseOrderRepository;
     @Autowired
-    private InventoryServiceImpl inventoryService;
-    @Autowired
-    private ItemService itemService;
-
+    private PurchaseOrderRepository purchaseOrderRepository;
 
     @Autowired
-    public PurchaseOrderServiceImpl(
-            PurchaseOrderRepository purchaseOrderRepository) {
-        this.purchaseOrderRepository = purchaseOrderRepository;
-    }
+    private ItemRepository itemRepository;
+
+    @Autowired
+    private InventoryRepository inventoryRepository;
 
     @Override
     public PurchaseOrder createPurchaseOrder(PurchaseOrder purchaseOrder) {
@@ -49,36 +47,39 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         purchaseOrderRepository.deleteById(id);
     }
 
-    @Override
-    public PurchaseOrder updatePurchaseOrderStatus(UUID id, OrderStatus newStatus) {
-        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Purchase Order not found"));
-
-        OrderStatus currentStatus = purchaseOrder.getStatus();
-
-        if (currentStatus == newStatus) {
-            return purchaseOrder;
-        }
-
-        if (isValidTransition(currentStatus, newStatus)) {
-            if (newStatus == OrderStatus.DELIVERED) {
-                fulfillPurchaseOrder(purchaseOrder);
-            }
-
-            purchaseOrder.setStatus(newStatus);
-            return purchaseOrderRepository.save(purchaseOrder);
-        } else {
-            throw new InvalidStatusTransitionException("The requested status transition is not allowed.");
-        }
-    }
-
+//    TODO update purchase order items: items can be updated after approval or delivery but it can't be re-delivered
+//    purposely excluding updating purchase order items, to avoid complexity
+//    purchase order items will be updated through the purchase order items route for now
     @Override
     public PurchaseOrder updatePurchaseOrder(UUID id, PurchaseOrder updatedPurchaseOrder) {
         PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Purchase Order not found"));
 
-        purchaseOrder.setStore(updatedPurchaseOrder.getStore());
-        return purchaseOrderRepository.save(updatedPurchaseOrder);
+//        Only make changes to undelivered orders
+        OrderStatus currentStatus = purchaseOrder.getStatus();
+        if (currentStatus.equals(OrderStatus.DELIVERED) || currentStatus.equals(OrderStatus.CANCELED)) {
+            throw new InvalidStatusTransitionException("Already Canceled/Delivered, can't be changed");
+        }
+
+//        set store
+        if (!currentStatus.equals(OrderStatus.APPROVED)) {
+            purchaseOrder.setStore(updatedPurchaseOrder.getStore());
+        }
+
+//        set status
+        OrderStatus newStatus = updatedPurchaseOrder.getStatus();
+
+        if (!currentStatus.equals(newStatus)) {
+            if (isValidTransition(currentStatus, newStatus)) {
+                if (newStatus.equals(OrderStatus.DELIVERED)) {
+                    fulfillPurchaseOrder(purchaseOrder);
+                }
+                purchaseOrder.setStatus(newStatus);
+            } else {
+                throw new InvalidStatusTransitionException("The requested status transition is not allowed.");
+            }
+        }
+        return purchaseOrderRepository.save(purchaseOrder);
     }
 
     /**
@@ -92,8 +93,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         return switch (currentStatus) {
             case PENDING ->
                     newStatus == OrderStatus.APPROVED || newStatus == OrderStatus.CANCELED;
-            case CANCELED -> newStatus == OrderStatus.APPROVED;
-            case APPROVED -> newStatus == OrderStatus.DELIVERED;
+            case APPROVED -> newStatus == OrderStatus.DELIVERED || newStatus == OrderStatus.CANCELED;
             default -> false;
         };
     }
@@ -105,31 +105,33 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     private void fulfillPurchaseOrder(PurchaseOrder purchaseOrder) {
         // Reduce item quantities and update item inventory
         for (PurchaseOrderItem orderItem : purchaseOrder.getPurchaseOrderItems()) {
-            Item item = orderItem.getItem();
+            Item item = itemRepository.findById(orderItem.getItem().getId()).orElse(null);
+            if (item == null) throw new EntityNotFoundException("Item not in stock");
+
             int orderedQuantity = orderItem.getQuantity();
             int availableQuantity = item.getQuantity();
 
             // Ensure that the available quantity is not less than the ordered quantity
             if (availableQuantity >= orderedQuantity) {
                 item.setQuantity(availableQuantity - orderedQuantity);
-                itemService.createItem(item);
+                itemRepository.save(item);
 
 //                update store inventory
                 Store store = purchaseOrder.getStore();
-                Inventory inventory = inventoryService.findInventoryByStoreAndItem(store, item);
+                Inventory inventory = inventoryRepository.findByStoreAndItem(store, item).orElse(null);
 
                 if (inventory == null) {
                     Inventory newInventory = new Inventory();
                     newInventory.setStore(store);
                     newInventory.setItem(item);
                     newInventory.setQuantity(orderedQuantity);
-                    inventoryService.createInventory(newInventory);
+                    inventoryRepository.save(newInventory);
                 } else {
                     inventory.setQuantity(inventory.getQuantity() + orderedQuantity);
-                    inventoryService.updateInventory(inventory.getId(), inventory);
+                    inventoryRepository.save(inventory);
                 }
             } else {
-                throw new InvalidStatusTransitionException("Item quantity is insufficient for fulfillment");
+                throw new InvalidStatusTransitionException("Item in stock is insufficient for fulfillment");
             }
         }
     }

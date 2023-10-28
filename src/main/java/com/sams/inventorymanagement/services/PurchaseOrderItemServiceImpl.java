@@ -4,8 +4,11 @@ import com.sams.inventorymanagement.dto.PurchaseOrderDTO;
 import com.sams.inventorymanagement.dto.PurchaseOrderItemDTO;
 import com.sams.inventorymanagement.entities.PurchaseOrder;
 import com.sams.inventorymanagement.entities.PurchaseOrderItem;
+import com.sams.inventorymanagement.enums.OrderStatus;
+import com.sams.inventorymanagement.exceptions.ValidationException;
 import com.sams.inventorymanagement.repositories.PurchaseOrderItemRepository;
 import com.sams.inventorymanagement.repositories.PurchaseOrderRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+@Log4j2
 @Service
 public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
     @Autowired
@@ -24,16 +28,26 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
     @Override
     public PurchaseOrderItem createPurchaseOrderItem(PurchaseOrderItem purchaseOrderItem) {
         resetQuantityToMaxAvailableQuantity(purchaseOrderItem);
+
         PurchaseOrder purchaseOrder = purchaseOrderRepository.getReferenceById(purchaseOrderItem.getPurchaseOrder().getId());
         purchaseOrderItem.setPurchaseOrder(purchaseOrder);
-        handlePurchaseOrderItemChanges(purchaseOrderItem);
-        return purchaseOrderItemRepository.save(purchaseOrderItem);
+        PurchaseOrderItem updatedPurchaseOrderItem = purchaseOrderItemRepository.save(purchaseOrderItem);
+
+        updatePurchaseOrderTotalValues(purchaseOrderItem);
+        purchaseOrderRepository.save(purchaseOrder);
+
+        return updatedPurchaseOrderItem;
     }
 
     @Override
     public void deletePurchaseOrderItem(Long id) {
         PurchaseOrderItem purchaseOrderItem = purchaseOrderItemRepository.getReferenceById(id);
         PurchaseOrder purchaseOrder = purchaseOrderRepository.getReferenceById(purchaseOrderItem.getPurchaseOrder().getId());
+        OrderStatus orderStatus = purchaseOrder.getStatus();
+        if (!orderStatus.equals(OrderStatus.PENDING)) {
+            throw new ValidationException("Items can only be updated in a Pending Order!");
+        }
+
         int quantity = purchaseOrderItem.getQuantity();
         Double price = purchaseOrderItem.getItem().getPrice();
 
@@ -55,8 +69,12 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
         }
     }
 
-    public void handlePurchaseOrderItemChanges(PurchaseOrderItem purchaseOrderItem) {
+    public void updatePurchaseOrderTotalValues(PurchaseOrderItem purchaseOrderItem) {
         PurchaseOrder purchaseOrder = purchaseOrderItem.getPurchaseOrder();
+        OrderStatus orderStatus = purchaseOrder.getStatus();
+        if (!orderStatus.equals(OrderStatus.PENDING)) {
+            throw new ValidationException("Items can only be updated in a Pending Order!");
+        }
         // Calculate totals for the associated PurchaseOrder
         int newTotalQuantity = 0;
         double newTotalPrice = 0.0;
@@ -70,7 +88,6 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
         purchaseOrder.setLastUpdated(LocalDate.now());
         purchaseOrder.setTotalQuantity(newTotalQuantity);
         purchaseOrder.setTotalPrice(newTotalPrice);
-        purchaseOrderRepository.save(purchaseOrder);
     }
 
     /**

@@ -62,32 +62,6 @@ public class PurchaseOrder {
 
 
     @Column(name = "last_updated")
-    private LocalDate lastUpdated;
-
-//    @PostPersist
-//    @PostUpdate
-//    @PostRemove
-//    private void updateTotals() {
-//        int newTotalQuantity = 0;
-//        double newTotalPrice = 0.0;
-//
-//        for (PurchaseOrderItem item : purchaseOrderItems) {
-//            newTotalQuantity += item.getQuantity();
-//            newTotalPrice += item.getItem().getPrice() * item.getQuantity();
-//        }
-//
-//        setLastUpdated(LocalDate.now());
-//        setTotalQuantity(newTotalQuantity);
-//        setTotalPrice(newTotalPrice);
-//
-//
-//    }
-//
-//    @PreUpdate
-//    public void preUpdate() {
-//        if (status.equals(OrderStatus.DELIVERED)) {
-//            throw new InvalidStatusTransitionException("Purchase order is already delivered and cannot be updated.");
-//        }
-//    }
+    private LocalDate lastUpdated = LocalDate.now();
 }
 

@@ -35,12 +35,20 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     public final ResponseEntity<Object> handleDuplicateCategoryException(ValidationException ex, WebRequest request) {
         List<String> details = new ArrayList<>();
         details.add(ex.getMessage());
-        ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), "Duplicate Entry", details);
+        ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), ex.getMessage(), details);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidStatusTransitionException.class)
+    public final ResponseEntity<Object> handleInvalidStatusTransitionException(InvalidStatusTransitionException ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getMessage());
+        ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), ex.getMessage(), details);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public final ResponseEntity<Object> handleConstraintViolationException(ValidationException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
         List<String> details = new ArrayList<>();
         details.add(ex.getMessage());
         ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), "Violates Data Integrity", details);
@@ -57,7 +65,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     public final ResponseEntity<Object> handleDuplicateCategoryException(EntityDuplicateException ex, WebRequest request) {
         List<String> details = new ArrayList<>();
         details.add(ex.getMessage());
-        ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), "Duplicate Entry", details);
+        ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), ex.getMessage(), details);
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
@@ -105,7 +113,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         List<String> details = new ArrayList<>();
         details.add(ex.getMessage());
 
-        ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), "An Error occurred", details);
+        ExceptionDetails error = new ExceptionDetails(LocalDateTime.now(), "Error Occurred", details);
 
         if (ex instanceof ConstraintViolationException) {
             error.setMessage("Constraint violation error occurred.");
