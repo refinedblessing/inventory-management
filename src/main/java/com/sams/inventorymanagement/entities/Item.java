@@ -55,7 +55,7 @@ public class Item {
     private Double price;
 
     /**
-     * The quantity of the item. It should be at least 1.
+     * The quantity of the item.
      */
     @Column(name = "quantity", nullable = false)
     private Integer quantity = 0;

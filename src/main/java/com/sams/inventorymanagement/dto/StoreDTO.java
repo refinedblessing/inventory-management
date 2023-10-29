@@ -1,10 +1,10 @@
 package com.sams.inventorymanagement.dto;
 
+import com.sams.inventorymanagement.entities.Store;
 import lombok.Getter;
 
 @Getter
 public class StoreDTO {
-    // Getters and setters (if needed)
     private Long id;
     private String name;
 
@@ -20,5 +20,9 @@ public class StoreDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public static StoreDTO fromStore(Store store) {
+        return new StoreDTO(store.getId(), store.getName());
     }
 }

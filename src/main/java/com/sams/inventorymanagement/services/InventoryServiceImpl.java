@@ -46,19 +46,26 @@ public class InventoryServiceImpl {
     }
 
     /**
-     * Updates an existing inventory record with new data.
-     *
+     * Updates an existing inventory record with new data
+     * we can only reduce quantity and update threshold
      * @param id             The ID of the inventory to update.
      * @param updatedInventory The updated inventory data.
      * @return The updated inventory or null if the specified inventory does not exist.
      */
     public Inventory updateInventory(Long id, Inventory updatedInventory) {
-        if (inventoryRepository.existsById(id)) {
-            updatedInventory.setId(id); // Ensure the ID is set
-            return inventoryRepository.save(updatedInventory);
-        } else {
-            return null; // Return null if the item with the specified ID does not exist
+        Inventory inventory = inventoryRepository.findById(id).orElse(null);
+        if (inventory == null) return null;
+
+        inventory.setThreshold(updatedInventory.getThreshold());
+
+//        Allow for only quantity reduction
+        Integer oldQuantity = inventory.getQuantity();
+        Integer newQuantity = updatedInventory.getQuantity();
+        if (oldQuantity > newQuantity) {
+            inventory.setQuantity(newQuantity);
         }
+
+        return inventoryRepository.save(inventory);
     }
 
     /**

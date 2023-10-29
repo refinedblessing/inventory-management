@@ -1,5 +1,6 @@
 package com.sams.inventorymanagement.services;
 
+import com.sams.inventorymanagement.entities.Inventory;
 import com.sams.inventorymanagement.entities.Store;
 import com.sams.inventorymanagement.enums.StoreType;
 
@@ -72,4 +73,6 @@ public interface StoreService {
      * @return A list of all stores.
      */
     List<Store> getAllStores();
+
+    List<Inventory> getInventoriesByStoreId(Long storeId);
 }

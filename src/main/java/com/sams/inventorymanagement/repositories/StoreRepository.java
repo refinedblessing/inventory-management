@@ -1,9 +1,11 @@
 package com.sams.inventorymanagement.repositories;
 
+import com.sams.inventorymanagement.entities.Inventory;
 import com.sams.inventorymanagement.entities.Store;
 import com.sams.inventorymanagement.enums.StoreType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -44,4 +46,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
             StoreType storeType,
             LocalDate openingDate
     );
+
+    @Query("SELECT s.inventories FROM Store s WHERE s.id = :storeId")
+    List<Inventory> findInventoriesByStoreId(@Param("storeId") Long storeId);
 }

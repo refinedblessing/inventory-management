@@ -79,4 +79,9 @@ public class StoreServiceImpl implements StoreService {
     public List<Store> getAllStores() {
         return storeRepository.findAll();
     }
+
+    @Override
+    public List<Inventory> getInventoriesByStoreId(Long storeId) {
+        return storeRepository.findInventoriesByStoreId(storeId);
+    }
 }

@@ -1,16 +1,15 @@
 package com.sams.inventorymanagement.controllers;
 
+import com.sams.inventorymanagement.dto.InventoryDTO;
 import com.sams.inventorymanagement.entities.Inventory;
 import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
 import com.sams.inventorymanagement.services.InventoryServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controller for managing inventory-related operations.
@@ -33,13 +32,13 @@ public class InventoryController {
      * @throws EntityNotFoundException If the inventory with the given ID does not exist.
      */
     @GetMapping("/{id}")
-    public Inventory getInventoryById(@PathVariable Long id) {
+    public InventoryDTO getInventoryById(@PathVariable Long id) {
         Inventory inventory = inventoryService.getInventoryById(id);
 
         if(inventory == null)
-            throw new EntityNotFoundException("id: " + id);
+            throw new EntityNotFoundException("Inventory not found");
 
-        return inventory;
+        return InventoryDTO.fromInventory(inventory);
     }
 
     /**
@@ -48,26 +47,9 @@ public class InventoryController {
      * @return A list of all inventories.
      */
     @GetMapping
-    public List<Inventory> getAllInventories() {
-        return inventoryService.getAllInventories();
-    }
-
-    /**
-     * Create a new inventory.
-     *
-     * @param inventory The inventory to create.
-     * @return The created inventory.
-     */
-    @PostMapping
-    public ResponseEntity<Inventory> createInventory(@Valid @RequestBody Inventory inventory) {
-        Inventory savedInventory = inventoryService.createInventory(inventory);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedInventory.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).build();
+    public List<InventoryDTO> getAllInventories() {
+        List<Inventory> inventories = inventoryService.getAllInventories();
+        return inventories.stream().map(InventoryDTO::fromInventory).collect(Collectors.toList());
     }
 
     /**
@@ -78,8 +60,13 @@ public class InventoryController {
      * @return The updated inventory.
      */
     @PutMapping("/{id}")
-    public Inventory updateInventory(@PathVariable Long id, @Valid @RequestBody Inventory updatedInventory) {
-        return inventoryService.updateInventory(id, updatedInventory);
+    public InventoryDTO updateInventory(@PathVariable Long id, @Valid @RequestBody Inventory updatedInventory) {
+        Inventory inventory = inventoryService.updateInventory(id, updatedInventory);
+
+        if(inventory == null)
+            throw new EntityNotFoundException("Inventory not found");
+
+        return InventoryDTO.fromInventory(inventory);
     }
 
     /**
@@ -98,7 +85,9 @@ public class InventoryController {
      * @return A list of inventories that are at or below their defined threshold levels.
      */
     @GetMapping("/threshold")
-    public List<Inventory> getAllInventoriesAtThreshold() {
-        return inventoryService.findInventoriesAtThreshold();
+    public List<InventoryDTO> getAllInventoriesAtThreshold() {
+        List<Inventory> inventories = inventoryService.findInventoriesAtThreshold();
+
+        return inventories.stream().map(InventoryDTO::fromInventory).collect(Collectors.toList());
     }
 }

@@ -1,5 +1,7 @@
 package com.sams.inventorymanagement.controllers;
 
+import com.sams.inventorymanagement.dto.InventoryDTO;
+import com.sams.inventorymanagement.entities.Inventory;
 import com.sams.inventorymanagement.entities.Store;
 import com.sams.inventorymanagement.enums.StoreType;
 import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controller for managing stores.
@@ -62,6 +65,13 @@ public class StoreController {
             throw new EntityNotFoundException("id: " + id);
 
         return store;
+    }
+
+    @GetMapping("/{storeId}/inventories")
+    public List<InventoryDTO> getInventoriesByStoreId(@PathVariable Long storeId) {
+        List<Inventory> inventories = storeService.getInventoriesByStoreId(storeId);
+
+        return inventories.stream().map(InventoryDTO::fromInventory).collect(Collectors.toList());
     }
 
     /**
