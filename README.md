@@ -4,21 +4,30 @@
 
 ## Overview
 
-The Inventory Management Application is a web-based system designed to help businesses manage their inventory, purchase orders, and suppliers efficiently. This application allows you to manage categories, items, stores, and purchase orders with ease.
+This Inventory Management Application is an API designed to help businesses manage their inventory, purchase orders, suppliers etc. efficiently.
 
 ## Features
 
 - **Category Management**: Create, update, and delete product categories.
 
-- **Item Management**: Manage product items, including name, description, price, and quantity.
+- **Item Management**: Manage product items, including name, short & long description, price, and quantity.
 
 - **Supplier Management**: Keep track of suppliers, including their contact details.
 
 - **Store Management**: Manage stores with location, type, and opening date.
 
-- **Inventory Control**: Keep inventory information for stores, manage quantity, and set thresholds.
+- **Inventory Control**: Keep inventory information for stores, manage quantity, and set thresholds, find inventories at threshold.
 
-- **Purchase Orders**: Create, approve, and track purchase orders with various statuses.
+- **Purchase Orders**: Create, approve, and track purchase orders with various statuses, update store inventory when purchase order is delivered.
+
+- **User Management**: Admin can create user, and assign roles and stores to user.
+
+- **Exception Handling**: Most Exceptions have been handled using a CustomizedErrorHandler.
+
+- **Testing**: TODO/WIP
+
+- **Data**: TODO/WIP
+
 
 ## Table of Contents
 
@@ -31,6 +40,10 @@ The Inventory Management Application is a web-based system designed to help busi
 - [License](#license)
 
 ## Getting Started
+
+- **Hosting**: API is currently hosted on Azure Web Apps [here](https://inventory-master.azurewebsites.net) and the Swagger ui [here](https://inventory-master.azurewebsites.net/swagger-ui/index.html#/)
+
+- **Frontend**: A User interface built using Next.js React Framework, Typescript and TailwindCSS hosted on Vercel [here](https://inventory-management-frontend-liart.vercel.app). *Not all endpoints have been implemented yet, especially User Management*
 
 ### Prerequisites
 
