@@ -11,21 +11,24 @@ import java.util.List;
  * Service interface for managing stores.
  */
 public interface StoreService {
+    //        TODO update all methods after fully implementing add store to user on frontend, so that only stores associated with the current user is returned
     /**
      * Search for stores based on various criteria.
      *
      * @param name        The name to search for (partial match).
      * @param address     The address to search for (partial match).
-     * @param storeType   The type of store to filter by.
+     * @param type   The type of store to filter by.
      * @param openingDate The opening date to filter by.
      * @return A list of stores that match the specified criteria.
      */
     List<Store> searchStoresByCriteria(
             String name,
             String address,
-            StoreType storeType,
+            StoreType type,
             LocalDate openingDate
     );
+
+    List<Store> searchStoresByCriteriaForUser(String name, String address, StoreType type, LocalDate openingDate, Long userId);
 
     /**
      * Get a specific store by its ID.

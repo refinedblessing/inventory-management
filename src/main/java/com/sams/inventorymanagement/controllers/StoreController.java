@@ -1,16 +1,19 @@
 package com.sams.inventorymanagement.controllers;
 
 import com.sams.inventorymanagement.dto.InventoryDTO;
+import com.sams.inventorymanagement.entities.AppUser;
 import com.sams.inventorymanagement.entities.Inventory;
 import com.sams.inventorymanagement.entities.Store;
 import com.sams.inventorymanagement.enums.StoreType;
 import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
+import com.sams.inventorymanagement.services.AppUserService;
 import com.sams.inventorymanagement.services.StoreService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,7 +22,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/stores")
-public class StoreController {
+public class StoreController extends BaseController {
 
     /**
      * Service for handling store-related operations.
@@ -27,12 +30,15 @@ public class StoreController {
     @Autowired
     private StoreService storeService;
 
+    @Autowired
+    private AppUserService appUserService;
+
     /**
      * Search for stores based on various criteria.
      *
      * @param name         The name of the store to search for.
      * @param address      The address of the store to search for.
-     * @param storeType    The type of store to search for.
+     * @param type    The type of store to search for.
      * @param openingDate  The opening date of the store to search for.
      * @return A list of stores matching the specified criteria.
      */
@@ -40,17 +46,31 @@ public class StoreController {
     public List<Store> searchStores(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String address,
-            @RequestParam(required = false) StoreType storeType,
+            @RequestParam(required = false) StoreType type,
             @RequestParam(required = false) LocalDate openingDate
     ) {
-        return storeService.searchStoresByCriteria(name, address, storeType, openingDate);
+        AppUser user = getCurrentUser();
+        //        TODO remove after fully implementing add store to user on frontend
+        if (isUserAdmin()) {
+            return storeService.searchStoresByCriteria(name, address, type, openingDate);
+        }
+
+        return storeService.searchStoresByCriteriaForUser(name,address, type, openingDate, user.getId());
     }
 
     @GetMapping
     public List<Store> getAllStores() {
-        return storeService.getAllStores();
+        AppUser user = getCurrentUser();
+
+//        TODO remove after fully implementing add store to user on frontend
+        if (isUserAdmin()) {
+            return storeService.getAllStores();
+        }
+
+        return new ArrayList<>(user.getStores());
     }
 
+//    TODO update other methods to only send store info associated with current User
     /**
      * Retrieve a store by its unique identifier.
      *

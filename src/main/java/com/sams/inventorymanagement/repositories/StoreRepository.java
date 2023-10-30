@@ -31,20 +31,35 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
      *
      * @param name         The name of the store (can be a partial match).
      * @param address      The address of the store (can be a partial match).
-     * @param storeType    The type of the store.
+     * @param type    The type of the store.
      * @param openingDate  The opening date of the store.
      * @return A list of stores that match the specified criteria.
      */
     @Query("SELECT s FROM Store s " +
             "WHERE LOWER(s.name) LIKE %:name% " +
             "OR LOWER(s.address) LIKE %:address% " +
-            "OR s.type = :storeType " +
+            "OR s.type = :type " +
             "OR s.openingDate = :openingDate")
     List<Store> searchStoresByCriteria(
             String name,
             String address,
-            StoreType storeType,
+            StoreType type,
             LocalDate openingDate
+    );
+
+    @Query("SELECT s FROM Store s " +
+            "JOIN s.users u " +
+            "WHERE (LOWER(s.name) LIKE %:name% " +
+            "OR LOWER(s.address) LIKE %:address% " +
+            "OR s.type = :type " +
+            "OR s.openingDate = :openingDate) " +
+            "AND u.id = :userId")
+    List<Store> searchStoresByCriteriaForUser(
+            @Param("name") String name,
+            @Param("address") String address,
+            @Param("type") StoreType type,
+            @Param("openingDate") LocalDate openingDate,
+            @Param("userId") Long userId
     );
 
     @Query("SELECT s.inventories FROM Store s WHERE s.id = :storeId")

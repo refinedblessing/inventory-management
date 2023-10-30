@@ -1,6 +1,7 @@
 package com.sams.inventorymanagement.services;
 
 import com.sams.inventorymanagement.entities.AppUser;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 
@@ -66,4 +67,13 @@ public interface AppUserService {
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
 
+    void addStoreToUser(Long userId, Long storeId);
+
+    @Transactional
+    void removeStoreFromUser(Long userId, Long storeId);
+
+    void addAllStoresToUser(Long userId);
+
+    @Transactional
+    void removeAllStoresFromUser(Long userId);
 }

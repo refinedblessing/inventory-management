@@ -12,6 +12,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a store where items are available for stocking and sale.
@@ -66,6 +67,16 @@ public class Store {
     @NotNull(message = "Type cannot be null")
     @Enumerated(EnumType.STRING)
     private StoreType type;
+
+    @ManyToMany
+    @JoinTable(
+            name = "store_user",
+            joinColumns = @JoinColumn(name = "store_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+//    we don't want to send user info along with store
+    @JsonIgnore
+    private Set<AppUser> users;
 
     /**
      * The opening date of the store. It cannot be null.

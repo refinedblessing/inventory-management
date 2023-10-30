@@ -2,6 +2,10 @@ package com.sams.inventorymanagement.controllers;
 
 import com.sams.inventorymanagement.entities.AppUser;
 import com.sams.inventorymanagement.services.AppUserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +18,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "User Controller", description = "User Management Controller")
 public class AppUserController {
     private final AppUserService appUserService;
 
@@ -94,5 +99,57 @@ public class AppUserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         appUserService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    /**
+     * Add a store to a user and add the user to the store.
+     *
+     * @param userId  The ID of the user to add the store to.
+     * @param storeId The ID of the store to add to the user.
+     */
+    @PostMapping("/addStore")
+    @Operation(summary = "Add a store to a user and add the user to the store")
+    public void addStoreToUser(
+            @Parameter(in = ParameterIn.QUERY, description = "The ID of the user to add the store to") Long userId,
+            @Parameter(in = ParameterIn.QUERY, description = "The ID of the store to add to the user") Long storeId) {
+        appUserService.addStoreToUser(userId, storeId);
+    }
+
+    /**
+     * Remove a store from a user and remove the user from the store.
+     *
+     * @param userId  The ID of the user to remove the store from.
+     * @param storeId The ID of the store to remove from the user.
+     */
+    @DeleteMapping("/removeStore")
+    @Operation(summary = "Remove a store from a user and remove the user from the store")
+    public void removeStoreFromUser(
+            @Parameter(in = ParameterIn.QUERY, description = "The ID of the user to remove the store from") Long userId,
+            @Parameter(in = ParameterIn.QUERY, description = "The ID of the store to remove from the user") Long storeId) {
+        appUserService.removeStoreFromUser(userId, storeId);
+    }
+
+    /**
+     * Add all stores to a user and add the user to all stores.
+     *
+     * @param userId The ID of the user to add all stores to.
+     */
+    @PostMapping("/addAllStores")
+    @Operation(summary = "Add all stores to a user and add the user to all stores")
+    public void addAllStoresToUser(
+            @Parameter(in = ParameterIn.QUERY, description = "The ID of the user to add all stores to") Long userId) {
+        appUserService.addAllStoresToUser(userId);
+    }
+
+    /**
+     * Remove all stores from a user and remove the user from all stores.
+     *
+     * @param userId The ID of the user to remove all stores from.
+     */
+    @DeleteMapping("/removeAllStores")
+    @Operation(summary = "Remove all stores from a user and remove the user from all stores")
+    public void removeAllStoresFromUser(
+            @Parameter(in = ParameterIn.QUERY, description = "The ID of the user to remove all stores from") Long userId) {
+        appUserService.removeAllStoresFromUser(userId);
     }
 }

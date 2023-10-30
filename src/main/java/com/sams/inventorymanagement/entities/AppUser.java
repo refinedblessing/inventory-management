@@ -86,6 +86,10 @@ public class AppUser {
     @Enumerated(EnumType.STRING)
     private Set<UserRole> roles;
 
+    @ManyToMany(mappedBy = "users")
+    @JsonIgnore
+    private Set<Store> stores;
+
 //    serving as DTO
     public AppUser(UserDetailsImpl user) {
         this.id = user.getId();

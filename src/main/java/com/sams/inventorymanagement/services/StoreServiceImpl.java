@@ -4,6 +4,7 @@ import com.sams.inventorymanagement.entities.Inventory;
 import com.sams.inventorymanagement.entities.Store;
 import com.sams.inventorymanagement.enums.StoreType;
 import com.sams.inventorymanagement.exceptions.EntityDuplicateException;
+import com.sams.inventorymanagement.repositories.AppUserRepository;
 import com.sams.inventorymanagement.repositories.InventoryRepository;
 import com.sams.inventorymanagement.repositories.StoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,18 @@ public class StoreServiceImpl implements StoreService {
 
     @Autowired
     private InventoryRepository inventoryRepository;
+
+    @Autowired
+    private AppUserRepository appUserRepository;
     
     @Override
-    public List<Store> searchStoresByCriteria(String name, String address, StoreType storeType, LocalDate openingDate) {
-        return storeRepository.searchStoresByCriteria(name, address, storeType, openingDate);
+    public List<Store> searchStoresByCriteria(String name, String address, StoreType type, LocalDate openingDate) {
+        return storeRepository.searchStoresByCriteria(name, address, type, openingDate);
+    }
+
+    @Override
+    public List<Store> searchStoresByCriteriaForUser(String name, String address, StoreType type, LocalDate openingDate, Long userId) {
+        return storeRepository.searchStoresByCriteriaForUser(name, address, type, openingDate, userId);
     }
 
     @Override
