@@ -5,6 +5,7 @@ import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
 import com.sams.inventorymanagement.services.ItemService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -74,6 +75,7 @@ public class ItemController {
      * @param item The item to create.
      * @return The created item.
      */
+    @Secured("ROLE_ADMIN")
     @PostMapping
     public Item createItem(@Valid @RequestBody Item item) {
         return itemService.createItem(item);
@@ -86,6 +88,7 @@ public class ItemController {
      * @param updatedItem The updated item.
      * @return The updated item.
      */
+    @Secured("ROLE_ADMIN")
     @PutMapping("/{id}")
     public Item updateItem(@PathVariable Long id, @Valid @RequestBody Item updatedItem) {
         return itemService.updateItem(id, updatedItem);
@@ -96,6 +99,7 @@ public class ItemController {
      *
      * @param id The ID of the item to delete.
      */
+    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{id}")
     public void deleteItem(@PathVariable Long id) {
         itemService.deleteItem(id);

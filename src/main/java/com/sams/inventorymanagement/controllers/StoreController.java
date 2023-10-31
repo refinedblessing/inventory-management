@@ -10,6 +10,7 @@ import com.sams.inventorymanagement.services.AppUserService;
 import com.sams.inventorymanagement.services.StoreService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -50,12 +51,22 @@ public class StoreController extends BaseController {
             @RequestParam(required = false) LocalDate openingDate
     ) {
         AppUser user = getCurrentUser();
-        //        TODO remove after fully implementing add store to user on frontend
-        if (isUserAdmin()) {
-            return storeService.searchStoresByCriteria(name, address, type, openingDate);
-        }
+        boolean hasSearchCriteria = name != null || address != null || type != null || openingDate != null;
 
-        return storeService.searchStoresByCriteriaForUser(name,address, type, openingDate, user.getId());
+        if (hasSearchCriteria) {
+            //        TODO remove after fully implementing add store to user on frontend
+            if (isAdmin()) {
+                return storeService.searchStoresByCriteria(name, address, type, openingDate);
+            }
+
+            return storeService.searchStoresByCriteriaForUser(name,address, type, openingDate, user.getId());
+        } else {
+            if (isAdmin()) {
+                return storeService.getAllStores();
+            }
+
+            return new ArrayList<>(user.getStores());
+        }
     }
 
     @GetMapping
@@ -63,7 +74,7 @@ public class StoreController extends BaseController {
         AppUser user = getCurrentUser();
 
 //        TODO remove after fully implementing add store to user on frontend
-        if (isUserAdmin()) {
+        if (isAdmin()) {
             return storeService.getAllStores();
         }
 
@@ -100,6 +111,7 @@ public class StoreController extends BaseController {
      * @param store The store to create.
      * @return The created store.
      */
+    @Secured("ROLE_ADMIN")
     @PostMapping
     public Store createStore(@Valid @RequestBody Store store) {
         return storeService.createStore(store);
@@ -112,6 +124,7 @@ public class StoreController extends BaseController {
      * @param updatedStore The updated store information.
      * @return The updated store.
      */
+    @Secured("ROLE_ADMIN")
     @PutMapping("/{id}")
     public Store updateStore(@PathVariable Long id, @Valid @RequestBody Store updatedStore) {
         return storeService.updateStore(id, updatedStore);
@@ -122,6 +135,7 @@ public class StoreController extends BaseController {
      *
      * @param id The ID of the store to delete.
      */
+    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{id}")
     public void deleteStore(@PathVariable Long id) {
         storeService.deleteStore(id);

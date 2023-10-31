@@ -2,6 +2,7 @@ package com.sams.inventorymanagement.controllers;
 
 import com.sams.inventorymanagement.dto.PurchaseOrderMaxDTO;
 import com.sams.inventorymanagement.entities.PurchaseOrder;
+import com.sams.inventorymanagement.enums.OrderStatus;
 import com.sams.inventorymanagement.services.PurchaseOrderItemServiceImpl;
 import com.sams.inventorymanagement.services.PurchaseOrderService;
 import jakarta.validation.Valid;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/purchase-orders")
-public class PurchaseOrderController {
+public class PurchaseOrderController extends BaseController {
 
     /**
      * Service for handling purchase order-related operations.
@@ -87,6 +88,12 @@ public class PurchaseOrderController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<PurchaseOrderMaxDTO> updatePurchaseOrder(@PathVariable UUID id, @Valid @RequestBody PurchaseOrder purchaseOrder) {
+//        check if the status is being changed to approved/canceled and make sure the user is a manager or admin
+        OrderStatus status = purchaseOrder.getStatus();
+        if ((status.equals(OrderStatus.APPROVED) || (status.equals(OrderStatus.CANCELED))) && (!isAdmin() && !isManager())) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         PurchaseOrder updatedPurchaseOrder = purchaseOrderService.updatePurchaseOrder(id, purchaseOrder);
 
         if (updatedPurchaseOrder != null) {

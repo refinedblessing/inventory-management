@@ -24,8 +24,13 @@ public class BaseController {
         return user;
     }
 
-    protected boolean isUserAdmin() {
+    protected boolean isAdmin() {
         AppUser user = getCurrentUser();
         return user.getRoles().contains(UserRole.ROLE_ADMIN);
+    }
+
+    protected boolean isManager() {
+        AppUser user = getCurrentUser();
+        return user.getRoles().contains(UserRole.ROLE_STORE_MANAGER);
     }
 }

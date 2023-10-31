@@ -36,23 +36,24 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
      * @return A list of stores that match the specified criteria.
      */
     @Query("SELECT s FROM Store s " +
-            "WHERE LOWER(s.name) LIKE %:name% " +
-            "OR LOWER(s.address) LIKE %:address% " +
-            "OR s.type = :type " +
-            "OR s.openingDate = :openingDate")
+            "WHERE (:name IS NULL OR LOWER(s.name) LIKE %:name%) " +
+            "AND (:address IS NULL OR LOWER(s.address) LIKE %:address%) " +
+            "AND (:type IS NULL OR s.type = :type) " +
+            "AND (:openingDate IS NULL OR s.openingDate = :openingDate)")
     List<Store> searchStoresByCriteria(
-            String name,
-            String address,
-            StoreType type,
-            LocalDate openingDate
+            @Param("name") String name,
+            @Param("address") String address,
+            @Param("type") StoreType type,
+            @Param("openingDate") LocalDate openingDate
     );
+
 
     @Query("SELECT s FROM Store s " +
             "JOIN s.users u " +
-            "WHERE (LOWER(s.name) LIKE %:name% " +
-            "OR LOWER(s.address) LIKE %:address% " +
-            "OR s.type = :type " +
-            "OR s.openingDate = :openingDate) " +
+            "WHERE (:name IS NULL OR LOWER(s.name) LIKE %:name%) " +
+            "AND (:address IS NULL OR LOWER(s.address) LIKE %:address%) " +
+            "AND (:type IS NULL OR s.type = :type) " +
+            "AND (:openingDate IS NULL OR s.openingDate = :openingDate) " +
             "AND u.id = :userId")
     List<Store> searchStoresByCriteriaForUser(
             @Param("name") String name,
