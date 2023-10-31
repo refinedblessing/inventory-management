@@ -21,13 +21,7 @@ public interface ItemService {
      * @param categoryName  The name of the category to which the item belongs (partial match).
      * @return A list of items that match the search criteria.
      */
-    List<Item> searchItemsByCriteria(
-            String name,
-            String description,
-            Double minPrice, Double maxPrice,
-            Integer minQuantity, Integer maxQuantity,
-            String categoryName
-    );
+    List<Item> searchItemsWithCriteria(String name, String description, Double minPrice, Double maxPrice, Integer minQuantity, Integer maxQuantity, String categoryName);
 
     /**
      * Retrieves an item by its unique identifier.

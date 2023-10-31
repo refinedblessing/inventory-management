@@ -19,8 +19,8 @@ public class ItemServiceImpl implements ItemService {
     private CategoryServiceImpl categoryService;
 
     @Override
-    public List<Item> searchItemsByCriteria(String name, String description, Double minPrice, Double maxPrice, Integer minQuantity, Integer maxQuantity, String categoryName) {
-        return itemRepository.findByNameContainingIgnoreCaseOrShortDescriptionContainingIgnoreCaseOrLongDescriptionContainingIgnoreCaseOrPriceBetweenOrQuantityBetweenOrCategoryNameContainingIgnoreCase(
+    public List<Item> searchItemsWithCriteria(String name, String description, Double minPrice, Double maxPrice, Integer minQuantity, Integer maxQuantity, String categoryName) {
+        return itemRepository.searchItemsWithCriteria(
                 name, description, description, minPrice, maxPrice, minQuantity, maxQuantity, categoryName
         );
     }

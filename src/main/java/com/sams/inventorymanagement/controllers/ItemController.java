@@ -45,7 +45,7 @@ public class ItemController {
             @RequestParam(required = false) Integer maxQuantity,
             @RequestParam(required = false) String categoryName
     ) {
-        return itemService.searchItemsByCriteria(name, description, minPrice, maxPrice, minQuantity, maxQuantity, categoryName);
+        return itemService.searchItemsWithCriteria(name, description, minPrice, maxPrice, minQuantity, maxQuantity, categoryName);
     }
 
     @GetMapping
