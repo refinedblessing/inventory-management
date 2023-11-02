@@ -3,7 +3,7 @@ package com.sams.inventorymanagement.controllers;
 import com.sams.inventorymanagement.dto.InventoryDTO;
 import com.sams.inventorymanagement.entities.Inventory;
 import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
-import com.sams.inventorymanagement.services.InventoryServiceImpl;
+import com.sams.inventorymanagement.services.InventoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,7 @@ public class InventoryController {
      * Service for handling inventory-related operations.
      */
     @Autowired
-    private InventoryServiceImpl inventoryService;
+    private InventoryService inventoryService;
 
     /**
      * Retrieve inventory by its unique identifier.

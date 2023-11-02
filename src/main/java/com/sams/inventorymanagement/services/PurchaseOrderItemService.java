@@ -1,5 +1,6 @@
 package com.sams.inventorymanagement.services;
 
+import com.sams.inventorymanagement.dto.PurchaseOrderItemDTO;
 import com.sams.inventorymanagement.entities.PurchaseOrderItem;
 
 import java.util.List;
@@ -49,4 +50,6 @@ public interface PurchaseOrderItemService {
      * @return The updated purchase order item or null if specified purchase order item is non-existent.
      */
     PurchaseOrderItem updatePurchaseOrderItem(Long id, PurchaseOrderItem updatedPurchaseOrderItem);
+
+    PurchaseOrderItemDTO mapToDTO(PurchaseOrderItem createdPurchaseOrderItem);
 }

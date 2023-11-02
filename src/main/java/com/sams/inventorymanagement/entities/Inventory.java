@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Represents the inventory of a specific item in a particular store. This entity contains a unique identifier,
@@ -63,5 +63,5 @@ public class Inventory {
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_updated")
-    private Date lastUpdated;
+    private LocalDateTime lastUpdated = LocalDateTime.now();
 }

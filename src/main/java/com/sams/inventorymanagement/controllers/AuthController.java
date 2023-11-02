@@ -4,6 +4,7 @@ import com.sams.inventorymanagement.dto.JwtResponse;
 import com.sams.inventorymanagement.dto.LogInRequest;
 import com.sams.inventorymanagement.dto.SignUpRequest;
 import com.sams.inventorymanagement.entities.AppUser;
+import com.sams.inventorymanagement.enums.UserRole;
 import com.sams.inventorymanagement.services.AppUserService;
 import com.sams.inventorymanagement.services.UserDetailsImpl;
 import com.sams.inventorymanagement.util.JwtUtil;
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -60,6 +64,11 @@ public class AuthController {
         AppUser user = new AppUser(signUpRequest);
         String hashedPassword = passwordEncoder.encode(signUpRequest.getPassword());
         user.setPassword(hashedPassword);
+
+//        TODO remove role addition from here
+        Set<UserRole> roles = new HashSet<>();
+        roles.add(UserRole.ROLE_ADMIN);
+        user.setRoles(roles);
 
         AppUser createdUser = appUserService.createUser(user);
 

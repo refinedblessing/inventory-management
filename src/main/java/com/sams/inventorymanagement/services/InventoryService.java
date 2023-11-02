@@ -13,7 +13,7 @@ import java.util.List;
  * Service implementation for managing inventories of items in stores.
  */
 @Service
-public class InventoryServiceImpl {
+public class InventoryService {
     @Autowired
     private InventoryRepository inventoryRepository;
 

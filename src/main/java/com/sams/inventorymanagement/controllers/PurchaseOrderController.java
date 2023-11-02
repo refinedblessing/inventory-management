@@ -3,7 +3,7 @@ package com.sams.inventorymanagement.controllers;
 import com.sams.inventorymanagement.dto.PurchaseOrderMaxDTO;
 import com.sams.inventorymanagement.entities.PurchaseOrder;
 import com.sams.inventorymanagement.enums.OrderStatus;
-import com.sams.inventorymanagement.services.PurchaseOrderItemServiceImpl;
+import com.sams.inventorymanagement.services.PurchaseOrderItemService;
 import com.sams.inventorymanagement.services.PurchaseOrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class PurchaseOrderController extends BaseController {
     private final PurchaseOrderService purchaseOrderService;
 
     @Autowired
-    private PurchaseOrderItemServiceImpl purchaseOrderItemService;
+    private PurchaseOrderItemService purchaseOrderItemService;
 
 
     /**

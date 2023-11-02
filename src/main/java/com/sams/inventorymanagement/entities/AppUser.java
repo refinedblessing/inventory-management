@@ -79,16 +79,20 @@ public class AppUser {
     /**
      * The roles of the user (admin, store_manager, store_staff).
      */
-    @Column(name = "role", nullable = false)
+    @Column(name = "roles", nullable = false)
     @NotNull(message = "Field can not be null")
     @ElementCollection(targetClass = UserRole.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    private Set<UserRole> roles;
+    private Set<UserRole> roles = new HashSet<>();
 
     @ManyToMany(mappedBy = "users")
     @JsonIgnore
-    private Set<Store> stores;
+    private Set<Store> stores = new HashSet<>();
+
+    public boolean isAdmin() {
+        return this.roles.contains(UserRole.ROLE_ADMIN);
+    }
 
 //    serving as DTO
     public AppUser(UserDetailsImpl user) {
@@ -106,10 +110,5 @@ public class AppUser {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.password = user.getPassword();
-
-//        TODO remove role addition from here
-        Set<UserRole> roles = new HashSet<>();
-        roles.add(UserRole.ROLE_ADMIN);
-        this.roles = roles;
     }
 }

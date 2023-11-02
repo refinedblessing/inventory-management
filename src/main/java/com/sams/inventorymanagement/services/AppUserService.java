@@ -1,5 +1,6 @@
 package com.sams.inventorymanagement.services;
 
+import com.sams.inventorymanagement.dto.AppUserDTO;
 import com.sams.inventorymanagement.entities.AppUser;
 import jakarta.transaction.Transactional;
 
@@ -48,14 +49,7 @@ public interface AppUserService {
      */
     AppUser createUser(AppUser user);
 
-    /**
-     * Update an existing user.
-     *
-     * @param id         The unique identifier of the user to be updated.
-     * @param updatedUser The updated user entity.
-     * @return The updated AppUser, or null if the user is not found.
-     */
-    AppUser updateUser(Long id, AppUser updatedUser);
+
 
     /**
      * Delete a user by their unique identifier.
@@ -67,13 +61,14 @@ public interface AppUserService {
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
 
-    void addStoreToUser(Long userId, Long storeId);
-
+    /**
+     * Update an existing user.
+     *
+     * @param admin The user performing the update.
+     *
+     * @param updatedUser The user to be updated.
+     * @return The updated AppUser, or null if the user is not found.
+     */
     @Transactional
-    void removeStoreFromUser(Long userId, Long storeId);
-
-    void addAllStoresToUser(Long userId);
-
-    @Transactional
-    void removeAllStoresFromUser(Long userId);
+    AppUser updateUser(AppUser admin, AppUserDTO updatedUser);
 }

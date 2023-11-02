@@ -1,17 +1,18 @@
 package com.sams.inventorymanagement.controllers;
 
+import com.sams.inventorymanagement.dto.AppUserDTO;
+import com.sams.inventorymanagement.dto.SignUpRequest;
 import com.sams.inventorymanagement.entities.AppUser;
 import com.sams.inventorymanagement.services.AppUserService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for managing application users (AppUser entities).
@@ -19,16 +20,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @Tag(name = "User Controller", description = "User Management Controller")
-public class AppUserController {
+public class AppUserController extends BaseController {
     private final AppUserService appUserService;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Constructs a new AppUserController with the provided AppUserService.
      *
      * @param appUserService The service responsible for user-related operations.
      */
-    public AppUserController(AppUserService appUserService) {
+    public AppUserController(PasswordEncoder passwordEncoder, AppUserService appUserService) {
         this.appUserService = appUserService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -37,8 +40,8 @@ public class AppUserController {
      * @return A ResponseEntity containing a list of AppUser entities with an HTTP status of OK (200).
      */
     @GetMapping
-    public ResponseEntity<List<AppUser>> getAllUsers() {
-        List<AppUser> users = appUserService.getAllUsers();
+    public ResponseEntity<List<AppUserDTO>> getAllUsers() {
+        List<AppUserDTO> users = appUserService.getAllUsers().stream().map(AppUserDTO::fromAppUser).collect(Collectors.toList());
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
@@ -50,10 +53,10 @@ public class AppUserController {
      * or an HTTP status of NOT_FOUND (404) if the user is not found.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<AppUser> getUserById(@PathVariable Long id) {
+    public ResponseEntity<AppUserDTO> getUserById(@PathVariable Long id) {
         AppUser user = appUserService.getUserById(id);
         if (user != null) {
-            return new ResponseEntity<>(user, HttpStatus.OK);
+            return new ResponseEntity<>(AppUserDTO.fromAppUser(user), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -62,13 +65,17 @@ public class AppUserController {
     /**
      * Create a new user.
      *
-     * @param user The user to be created.
+     * @param signUpRequest The user signup info to be created.
      * @return A ResponseEntity containing the created AppUser with an HTTP status of CREATED (201).
      */
     @PostMapping
-    public ResponseEntity<AppUser> createUser(@Valid @RequestBody AppUser user) {
+    public ResponseEntity<AppUserDTO> createUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+        AppUser user = new AppUser(signUpRequest);
+        String hashedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(hashedPassword);
+
         AppUser createdUser = appUserService.createUser(user);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+        return new ResponseEntity<>(AppUserDTO.fromAppUser(createdUser), HttpStatus.CREATED);
     }
 
     /**
@@ -80,11 +87,12 @@ public class AppUserController {
      * or an HTTP status of NOT_FOUND (404) if the user is not found.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<AppUser> updateUser(@PathVariable Long id, @Valid @RequestBody AppUser updatedUser) {
-        AppUser user = appUserService.updateUser(id, updatedUser);
+    public ResponseEntity<AppUserDTO> updateUser(@PathVariable Long id, @Valid @RequestBody AppUserDTO updatedUser) {
+        AppUser user = appUserService.updateUser(getCurrentUser(), updatedUser);
+
         if (user != null) {
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        } else {
+            return new ResponseEntity<>(AppUserDTO.fromAppUser(user), HttpStatus.OK);
+        }  else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -99,57 +107,5 @@ public class AppUserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         appUserService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    /**
-     * Add a store to a user and add the user to the store.
-     *
-     * @param userId  The ID of the user to add the store to.
-     * @param storeId The ID of the store to add to the user.
-     */
-    @PostMapping("/addStore")
-    @Operation(summary = "Add a store to a user and add the user to the store")
-    public void addStoreToUser(
-            @Parameter(in = ParameterIn.QUERY, description = "The ID of the user to add the store to") Long userId,
-            @Parameter(in = ParameterIn.QUERY, description = "The ID of the store to add to the user") Long storeId) {
-        appUserService.addStoreToUser(userId, storeId);
-    }
-
-    /**
-     * Remove a store from a user and remove the user from the store.
-     *
-     * @param userId  The ID of the user to remove the store from.
-     * @param storeId The ID of the store to remove from the user.
-     */
-    @DeleteMapping("/removeStore")
-    @Operation(summary = "Remove a store from a user and remove the user from the store")
-    public void removeStoreFromUser(
-            @Parameter(in = ParameterIn.QUERY, description = "The ID of the user to remove the store from") Long userId,
-            @Parameter(in = ParameterIn.QUERY, description = "The ID of the store to remove from the user") Long storeId) {
-        appUserService.removeStoreFromUser(userId, storeId);
-    }
-
-    /**
-     * Add all stores to a user and add the user to all stores.
-     *
-     * @param userId The ID of the user to add all stores to.
-     */
-    @PostMapping("/addAllStores")
-    @Operation(summary = "Add all stores to a user and add the user to all stores")
-    public void addAllStoresToUser(
-            @Parameter(in = ParameterIn.QUERY, description = "The ID of the user to add all stores to") Long userId) {
-        appUserService.addAllStoresToUser(userId);
-    }
-
-    /**
-     * Remove all stores from a user and remove the user from all stores.
-     *
-     * @param userId The ID of the user to remove all stores from.
-     */
-    @DeleteMapping("/removeAllStores")
-    @Operation(summary = "Remove all stores from a user and remove the user from all stores")
-    public void removeAllStoresFromUser(
-            @Parameter(in = ParameterIn.QUERY, description = "The ID of the user to remove all stores from") Long userId) {
-        appUserService.removeAllStoresFromUser(userId);
     }
 }

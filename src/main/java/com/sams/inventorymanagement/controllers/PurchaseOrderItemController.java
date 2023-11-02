@@ -2,7 +2,7 @@ package com.sams.inventorymanagement.controllers;
 
 import com.sams.inventorymanagement.dto.PurchaseOrderItemDTO;
 import com.sams.inventorymanagement.entities.PurchaseOrderItem;
-import com.sams.inventorymanagement.services.PurchaseOrderItemServiceImpl;
+import com.sams.inventorymanagement.services.PurchaseOrderItemService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class PurchaseOrderItemController {
     /**
      * Service for handling purchase order item-related operations.
      */
-    private final PurchaseOrderItemServiceImpl purchaseOrderItemService;
+    private final PurchaseOrderItemService purchaseOrderItemService;
 
     /**
      * Constructs a new PurchaseOrderItemController with the provided service.
@@ -29,7 +29,7 @@ public class PurchaseOrderItemController {
      * @param purchaseOrderItemService The service for handling purchase order item operations.
      */
     @Autowired
-    public PurchaseOrderItemController(PurchaseOrderItemServiceImpl purchaseOrderItemService) {
+    public PurchaseOrderItemController(PurchaseOrderItemService purchaseOrderItemService) {
         this.purchaseOrderItemService = purchaseOrderItemService;
     }
 

@@ -1,9 +1,12 @@
 package com.sams.inventorymanagement.services;
 
+import com.sams.inventorymanagement.dto.AppUserDTO;
+import com.sams.inventorymanagement.dto.StoreDTO;
 import com.sams.inventorymanagement.entities.AppUser;
 import com.sams.inventorymanagement.entities.Store;
 import com.sams.inventorymanagement.exceptions.EntityDuplicateException;
 import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
+import com.sams.inventorymanagement.exceptions.InvalidStatusTransitionException;
 import com.sams.inventorymanagement.exceptions.ValidationException;
 import com.sams.inventorymanagement.repositories.AppUserRepository;
 import com.sams.inventorymanagement.repositories.StoreRepository;
@@ -11,6 +14,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,16 +61,6 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUser updateUser(Long id, AppUser updatedUser) {
-        if (appUserRepository.existsById(id)) {
-            updatedUser.setId(id); // Ensure the ID is set
-            return appUserRepository.save(updatedUser);
-        } else {
-            return null; // Return null if the user with the specified ID does not exist
-        }
-    }
-
-    @Override
     public void deleteUser(Long id) {
         appUserRepository.deleteById(id);
     }
@@ -89,70 +83,59 @@ public class AppUserServiceImpl implements AppUserService {
         return appUserRepository.existsByUsername(username);
     }
 
-    @Override
-    public void addStoreToUser(Long userId, Long storeId) {
-        AppUser user = appUserRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
-
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new EntityNotFoundException("Store not found with ID: " + storeId));
-
-        user.getStores().add(store);
-        store.getUsers().add(user);
-
-        appUserRepository.save(user);
-        storeRepository.save(store);
-    }
 
     @Transactional
     @Override
-    public void removeStoreFromUser(Long userId, Long storeId) {
-        AppUser user = appUserRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+    public AppUser updateUser(AppUser admin, AppUserDTO updatedUser) {
+        AppUser user = appUserRepository.findById(updatedUser.getId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new EntityNotFoundException("Store not found with ID: " + storeId));
+//        TODO include SUPER_ADMIN User that can update ADMIN
+//        TODO update Exception handler
 
-        if (user.getStores().contains(store)) {
-            user.getStores().remove(store);
-            store.getUsers().remove(user);
-
-            appUserRepository.save(user);
-            storeRepository.save(store);
-        } else {
-            throw new EntityNotFoundException("Store not found for user");
-        }
-    }
-
-    @Override
-    public void addAllStoresToUser(Long userId) {
-        AppUser user = appUserRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
-
-        List<Store> allStores = storeRepository.findAll();
-
-        user.getStores().addAll(allStores);  // Add all stores to the user
-
-        for (Store store : allStores) {
-            store.getUsers().add(user);  // Add the user to each store
+//        Stopping Admin from sending updates to other ADMIN users
+        if (user.isAdmin() && !(user.getId().equals(admin.getId()))) {
+            throw new InvalidStatusTransitionException("Unauthorised to update an ADMIN");
         }
 
-        appUserRepository.save(user);
-        storeRepository.saveAll(allStores);
-    }
+//            Stopping Admin from creating ADMINS
+//        check if the update includes an admin role, and confirm that it is not the current admin before proceeding
+        if (updatedUser.isAdmin() && !(admin.getId().equals(updatedUser.getId()))) {
+            throw new InvalidStatusTransitionException("Unauthorised to create another ADMIN");
+        }
 
-    @Transactional
-    @Override
-    public void removeAllStoresFromUser(Long userId) {
-        AppUser user = appUserRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+//            Stopping Admin from removing ADMIN role from themselves like I just did :(
+        if (user.isAdmin() && !(updatedUser.isAdmin())) {
+            throw new InvalidStatusTransitionException("Unauthorised to remove another ADMIN");
+        }
 
+//        Finally do the updates
+//        update user roles
+        user.setRoles(updatedUser.getRoles());
+
+//        clear out the old store info
         for (Store store : user.getStores()) {
-            store.getUsers().remove(user);  // Remove the user from each store
+            store.getUsers().remove(user);
+        }
+        user.getStores().clear();
+
+//        create empty stores list
+        List<Store> stores = new ArrayList<>();
+
+        // Add all stores to the user and vice-versa
+        for (StoreDTO s : updatedUser.getStores()) {
+            Store store = storeRepository.findById(s.getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Store not found with ID: " + s.getId()));
+
+            user.getStores().add(store);
+            store.getUsers().add(user);
+
+//            update stores list
+            stores.add(store);
         }
 
-        user.getStores().clear();  // Clear all stores from the user
-
-        appUserRepository.save(user);
+//        save all stores
+        storeRepository.saveAll(stores);
+        return appUserRepository.save(user);
     }
 }

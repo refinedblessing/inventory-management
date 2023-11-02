@@ -6,7 +6,6 @@ import com.sams.inventorymanagement.entities.Inventory;
 import com.sams.inventorymanagement.entities.Store;
 import com.sams.inventorymanagement.enums.StoreType;
 import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
-import com.sams.inventorymanagement.services.AppUserService;
 import com.sams.inventorymanagement.services.StoreService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +30,6 @@ public class StoreController extends BaseController {
     @Autowired
     private StoreService storeService;
 
-    @Autowired
-    private AppUserService appUserService;
 
     /**
      * Search for stores based on various criteria.
