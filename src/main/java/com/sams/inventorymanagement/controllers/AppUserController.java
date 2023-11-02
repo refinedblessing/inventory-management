@@ -105,7 +105,19 @@ public class AppUserController extends BaseController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        appUserService.deleteUser(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//      an admin can delete themselves or non-admins
+        AppUser user = appUserService.getUserById(id);
+        if (user != null) {
+            if (user.isAdmin()) {
+                if (!(getCurrentUser().getId().equals(user.getId()))) {
+                    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                }
+            }
+            appUserService.deleteUser(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        }  else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

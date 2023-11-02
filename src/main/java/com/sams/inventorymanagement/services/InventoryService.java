@@ -7,6 +7,7 @@ import com.sams.inventorymanagement.repositories.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -64,6 +65,8 @@ public class InventoryService {
         if (oldQuantity > newQuantity) {
             inventory.setQuantity(newQuantity);
         }
+
+        inventory.setLastUpdated(LocalDate.now());
 
         return inventoryRepository.save(inventory);
     }
