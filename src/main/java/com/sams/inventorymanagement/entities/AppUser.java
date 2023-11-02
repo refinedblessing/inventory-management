@@ -79,7 +79,7 @@ public class AppUser {
     /**
      * The roles of the user (admin, store_manager, store_staff).
      */
-    @Column(name = "roles", nullable = false)
+    @Column(name = "role", nullable = false)
     @NotNull(message = "Field can not be null")
     @ElementCollection(targetClass = UserRole.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))

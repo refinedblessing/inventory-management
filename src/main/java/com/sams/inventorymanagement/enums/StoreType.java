@@ -8,10 +8,17 @@ package com.sams.inventorymanagement.enums;
  * - CLUB: Membership-based wholesale club.
  * - SUPERMARKET: Supermarket.
  */
+// TODO This can be an Entity of its own, instead of being hardcoded
 public enum StoreType {
     RETAIL,
     WAREHOUSE,
     WHOLESALE,
     CLUB,
-    SUPERMARKET
+    SUPERMARKET,
+    DEPARTMENT_STORE,
+    BOUTIQUE,
+    HARDWARE_STORE,
+    HOME_IMPROVEMENT,
+    SPORTING_GOODS_STORE,
+    ELECTRONICS_STORE,
 }
