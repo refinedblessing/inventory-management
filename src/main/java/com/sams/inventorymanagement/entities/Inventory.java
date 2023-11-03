@@ -1,7 +1,6 @@
 package com.sams.inventorymanagement.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -49,9 +48,8 @@ public class Inventory {
     /**
      * The current quantity of the item in stock. The quantity must be greater than or equal to 1.
      */
-    @Min(value = 1, message = "Inventory must have at least 1 quantity in stock")
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity;
+    @Column(name = "quantity")
+    private Integer quantity = 0;
 
     /**
      * The minimum quantity threshold: the minimum quantity required in the store. It is initially set to 0.

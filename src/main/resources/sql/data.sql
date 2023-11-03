@@ -178,16 +178,15 @@ INSERT INTO store (name, address, email, phone, type, opening_date) VALUES
     ('Fresh Mart', '777 Green Avenue, City10', 'info@freshmart.com', '+01234567890', 'SUPERMARKET', '2023-10-11');
 
 
-
 -- Create 5 purchase orders for 5 different stores
--- Generate binary(16) IDs for Purchase Orders
-INSERT INTO purchase_order (id, store_id)
+-- Generate binary(16) IDs for Purchase Orders and set status to PENDING
+INSERT INTO purchase_order (id, store_id, total_quantity, total_price, status, last_updated)
 VALUES
-    (UNHEX(REPLACE(UUID(), '-', '')), 1),
-    (UNHEX(REPLACE(UUID(), '-', '')), 2),
-    (UNHEX(REPLACE(UUID(), '-', '')), 3),
-    (UNHEX(REPLACE(UUID(), '-', '')), 4),
-    (UNHEX(REPLACE(UUID(), '-', '')), 5);
+    (UNHEX(REPLACE(UUID(), '-', '')), 1, 0, 0.0, 'PENDING', CURDATE()),
+    (UNHEX(REPLACE(UUID(), '-', '')), 2, 0, 0.0, 'PENDING', CURDATE()),
+    (UNHEX(REPLACE(UUID(), '-', '')), 3, 0, 0.0, 'PENDING', CURDATE()),
+    (UNHEX(REPLACE(UUID(), '-', '')), 4, 0, 0.0, 'PENDING', CURDATE()),
+    (UNHEX(REPLACE(UUID(), '-', '')), 5, 0, 0.0, 'PENDING', CURDATE());
 
 
 -- Purchase Order 1
@@ -250,12 +249,26 @@ WHERE item.category_id IN (
     WHERE category.name IN ('Clothing', 'Apparel')
 );
 
+-- Calculate and update total_quantity and total_price for all Purchase Orders
+UPDATE purchase_order po
+SET po.total_quantity = (
+    SELECT SUM(poi.quantity)
+    FROM purchase_order_item poi
+    WHERE poi.purchase_order_id = po.id
+),
+po.total_price = (
+    SELECT SUM(poi.quantity * item.price)
+    FROM purchase_order_item poi
+    JOIN item ON poi.item_id = item.id
+    WHERE poi.purchase_order_id = po.id
+)
+WHERE po.store_id IN (1, 2, 3, 4, 5);
 
 
 
 -- Create User 1 - Admin
 INSERT INTO app_user (password, email, first_name, last_name, username)
-VALUES ('password', 'admin@example.com', 'John', 'Doe', 'admin');
+VALUES ('$2y$10$zyzkLmUGGpUR6lPmA3ZfHeTyx4xcBXjqqaw1WiWOq5I/U2jG2drmi', 'admin@example.com', 'John', 'Doe', 'admin');
 
 -- Assign the 'ROLE_ADMIN' role to User 1
 INSERT INTO user_role (user_id, role)
@@ -263,7 +276,7 @@ VALUES (1, 'ROLE_ADMIN');
 
 -- Create User 2 - Store Manager
 INSERT INTO app_user (password, email, first_name, last_name, username)
-VALUES ('password', 'manager1@example.com', 'Alice', 'Smith', 'manager1');
+VALUES ('$2y$10$zyzkLmUGGpUR6lPmA3ZfHeTyx4xcBXjqqaw1WiWOq5I/U2jG2drmi', 'manager1@example.com', 'Alice', 'Smith', 'manager1');
 
 -- Assign the 'ROLE_STORE_MANAGER' role to User 2
 INSERT INTO user_role (user_id, role)
@@ -271,7 +284,7 @@ VALUES (2, 'ROLE_STORE_MANAGER');
 
 -- Create User 3 - Store Manager
 INSERT INTO app_user (password, email, first_name, last_name, username)
-VALUES ('password', 'manager2@example.com', 'Bob', 'Johnson', 'manager2');
+VALUES ('$2y$10$zyzkLmUGGpUR6lPmA3ZfHeTyx4xcBXjqqaw1WiWOq5I/U2jG2drmi', 'manager2@example.com', 'Bob', 'Johnson', 'manager2');
 
 -- Assign the 'ROLE_STORE_MANAGER' role to User 3
 INSERT INTO user_role (user_id, role)
@@ -279,7 +292,7 @@ VALUES (3, 'ROLE_STORE_MANAGER');
 
 -- Create User 4 - Store Staff
 INSERT INTO app_user (password, email, first_name, last_name, username)
-VALUES ('password', 'staff1@example.com', 'Eva', 'Brown', 'staff1');
+VALUES ('$2y$10$zyzkLmUGGpUR6lPmA3ZfHeTyx4xcBXjqqaw1WiWOq5I/U2jG2drmi', 'staff1@example.com', 'Eva', 'Brown', 'staff1');
 
 -- Assign the 'ROLE_STORE_STAFF' role to User 4
 INSERT INTO user_role (user_id, role)
@@ -287,7 +300,7 @@ VALUES (4, 'ROLE_STORE_STAFF');
 
 -- Create User 5 - Store Staff
 INSERT INTO app_user (password, email, first_name, last_name, username)
-VALUES ('password', 'staff2@example.com', 'David', 'Lee', 'staff2');
+VALUES ('$2y$10$zyzkLmUGGpUR6lPmA3ZfHeTyx4xcBXjqqaw1WiWOq5I/U2jG2drmi', 'staff2@example.com', 'David', 'Lee', 'staff2');
 
 -- Assign the 'ROLE_STORE_STAFF' role to User 5
 INSERT INTO user_role (user_id, role)
@@ -317,25 +330,25 @@ VALUES (4, 5);
 -- Retail store with 3 different categories of items
 
 -- Map Retail store to the "Consumer Electronics" category (category_id = 1)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    1, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3
+    1, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3, CURDATE()
 FROM item
 WHERE category_id = 1
 LIMIT 5;
 
 -- Map Retail store to the "Clothing" category (category_id = 2)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    1, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3
+    1, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3, CURDATE()
 FROM item
 WHERE category_id = 2
 LIMIT 5;
 
 -- Map Retail store to the "Fragrances and Perfumes" category (category_id = 10)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    1, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3
+    1, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3, CURDATE()
 FROM item
 WHERE category_id = 10
 LIMIT 5;
@@ -344,17 +357,17 @@ LIMIT 5;
 -- Warehouse store with 2 different categories of items
 
 -- Map Warehouse store to the "Consumer Electronics" category (category_id = 1)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    2, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3
+    2, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3, CURDATE()
 FROM item
 WHERE category_id = 1
 LIMIT 5;
 
 -- Map Warehouse store to the "Apparel" category (category_id = 2)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    2, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3
+    2, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3, CURDATE()
 FROM item
 WHERE category_id = 2
 LIMIT 5;
@@ -363,25 +376,25 @@ LIMIT 5;
 -- Supermarket store with 3 different categories of items
 
 -- Map Supermarket store to the "Organic Vegetables" category (category_id = 5)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    3, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3
+    3, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3, CURDATE()
 FROM item
 WHERE category_id = 5
 LIMIT 5;
 
 -- Map Supermarket store to the "Dairy Products" category (category_id = 7)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    3, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3
+    3, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3, CURDATE()
 FROM item
 WHERE category_id = 7
 LIMIT 5;
 
 -- Map Supermarket store to the "Fragrances and Perfumes" category (category_id = 10)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    3, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3
+    3, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3, CURDATE()
 FROM item
 WHERE category_id = 10
 LIMIT 5;
@@ -390,17 +403,17 @@ LIMIT 5;
 -- Electronics store with 2 different categories of items
 
 -- Map Electronics store to the "Consumer Electronics" category (category_id = 1)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    4, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3
+    4, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3, CURDATE()
 FROM item
 WHERE category_id = 1
 LIMIT 5;
 
 -- Map Electronics store to the "Electronics" category (category_id = 3)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    4, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3
+    4, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3, CURDATE()
 FROM item
 WHERE category_id = 3
 LIMIT 5;
@@ -409,17 +422,17 @@ LIMIT 5;
 -- Boutique store with 2 different categories of items
 
 -- Map Boutique store to the "Clothing" category (category_id = 2)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    5, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3
+    5, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3, CURDATE()
 FROM item
 WHERE category_id = 2
 LIMIT 5;
 
 -- Map Boutique store to the "Fragrances and Perfumes" category (category_id = 10)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    5, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3
+    5, id AS item_id, FLOOR(RAND() * 400), FLOOR(RAND() * 98) + 3, CURDATE()
 FROM item
 WHERE category_id = 10
 LIMIT 5;
@@ -428,41 +441,41 @@ LIMIT 5;
 -- Hardware store with 5 different categories of items
 
 -- Map Hardware store to the "Consumer Electronics" category (category_id = 1)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    6, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70)
+    6, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70), CURDATE()
 FROM item
 WHERE category_id = 1
 LIMIT 5;
 
 -- Map Hardware store to the "Apparel" category (category_id = 4)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    6, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70)
+    6, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70), CURDATE()
 FROM item
 WHERE category_id = 4
 LIMIT 5;
 
 -- Map Hardware store to the "Organic Vegetables" category (category_id = 5)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    6, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70)
+    6, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70), CURDATE()
 FROM item
 WHERE category_id = 5
 LIMIT 5;
 
 -- Map Hardware store to the "Desserts and Sweets" category (category_id = 6)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    6, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70)
+    6, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70), CURDATE()
 FROM item
 WHERE category_id = 6
 LIMIT 5;
 
 -- Map Hardware store to the "Fragrances and Perfumes" category (category_id = 10)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    6, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70)
+    6, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70), CURDATE()
 FROM item
 WHERE category_id = 10
 LIMIT 5;
@@ -471,74 +484,74 @@ LIMIT 5;
 -- Sporting Goods store with 3 different categories of items
 
 -- Map Sporting Goods store to the "Consumer Electronics" category (category_id = 1)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    7, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70)
+    7, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70), CURDATE()
 FROM item
 WHERE category_id = 1
 LIMIT 5;
 
 -- Map Sporting Goods store to the "Clothing" category (category_id = 2)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    7, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70)
+    7, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70), CURDATE()
 FROM item
 WHERE category_id = 2
 LIMIT 5;
 
 -- Map Sporting Goods store to the "Organic Vegetables" category (category_id = 5)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    7, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70)
+    7, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70), CURDATE()
 FROM item
 WHERE category_id = 5
 LIMIT 5;
 
 -- Map Sporting Goods store to the "Desserts and Sweets" category (category_id = 6)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    7, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70)
+    7, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70), CURDATE()
 FROM item
 WHERE category_id = 6
 LIMIT 5;
 
 -- Map Sporting Goods store to the "Fragrances and Perfumes" category (category_id = 10)
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
-    7, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70)
+    7, id AS item_id, LEAST(FLOOR(RAND() * 100), 100), LEAST(FLOOR(RAND() * 70) + 3, 70), CURDATE()
 FROM item
 WHERE category_id = 10
 LIMIT 5;
 
 -- Create inventory for Store 8 (Home Transform)
 -- Home Improvement store with a variety of items
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
     8,
     id AS item_id,
-    FLOOR(RAND() * 100),  -- Random quantity up to 100
-    FLOOR(RAND() * 70) + 3  -- Random threshold between 3 and 70
+    FLOOR(RAND() * 100) + 1,  -- Random quantity up to 100
+    FLOOR(RAND() * 70) + 3, CURDATE()  -- Random threshold between 3 and 70
 FROM item
 LIMIT 10;  -- Generate inventories for 10 random items
 
 -- Create inventory for Store 9 (Beauty Bliss)
 -- Department Store with a variety of items
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
     9,
     id AS item_id,
-    FLOOR(RAND() * 100),  -- Random quantity up to 100
-    FLOOR(RAND() * 70) + 3  -- Random threshold between 3 and 70
+    FLOOR(RAND() * 100) + 1,  -- Random quantity up to 100
+    FLOOR(RAND() * 70) + 3, CURDATE()  -- Random threshold between 3 and 70
 FROM item
 LIMIT 10;  -- Generate inventories for 10 random items
 
 -- Create inventory for Store 10 (Fresh Mart)
 -- Supermarket with a variety of items
-INSERT INTO inventory (store_id, item_id, quantity, threshold)
+INSERT INTO inventory (store_id, item_id, quantity, threshold, last_updated)
 SELECT
     10,
     id AS item_id,
-    FLOOR(RAND() * 100),  -- Random quantity up to 100
-    FLOOR(RAND() * 70) + 3  -- Random threshold between 3 and 70
+    FLOOR(RAND() * 100) + 1,  -- Random quantity up to 100
+    FLOOR(RAND() * 70) + 3, CURDATE()  -- Random threshold between 3 and 70
 FROM item
 LIMIT 10;  -- Generate inventories for 10 random items
