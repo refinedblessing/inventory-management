@@ -28,6 +28,15 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     @Query("SELECT COUNT(i) FROM Inventory i WHERE i.quantity <= i.threshold")
     long countByQuantityAtThreshold();
 
+    @Query("SELECT COUNT(i) FROM Inventory i WHERE i.store.id = :storeId")
+    long countTotalItemsInStoreInventory(@Param("storeId") Long storeId);
+
+    @Query("SELECT SUM(i.quantity * i.item.price) FROM Inventory i WHERE i.store.id = :storeId")
+    double calculateTotalStoreWorth(@Param("storeId") Long storeId);
+
+    @Query("SELECT COUNT(i) FROM Inventory i WHERE i.store.id = :storeId AND i.quantity <= i.threshold")
+    long countByStoreIdAndQuantityAtThreshold(@Param("storeId") Long storeId);
+
     // Find inventory by store
     List<Inventory> findByStore(Store store);
 

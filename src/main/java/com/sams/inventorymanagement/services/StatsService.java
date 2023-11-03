@@ -1,6 +1,7 @@
 package com.sams.inventorymanagement.services;
 
 import com.sams.inventorymanagement.dto.HomePageStatsDTO;
+import com.sams.inventorymanagement.dto.StorePageStatsDTO;
 import com.sams.inventorymanagement.enums.OrderStatus;
 import com.sams.inventorymanagement.repositories.InventoryRepository;
 import com.sams.inventorymanagement.repositories.ItemRepository;
@@ -38,5 +39,22 @@ public class StatsService {
     }
 
 
+    public StorePageStatsDTO getStorePageStats(Long storeId) {
+        StorePageStatsDTO statsDTO = new StorePageStatsDTO();
+
+        // Total items in store inventory
+        statsDTO.setTotalItemsInInventory(inventoryRepository.countTotalItemsInStoreInventory(storeId));
+
+        // Total store worth
+        statsDTO.setTotalStoreWorth(inventoryRepository.calculateTotalStoreWorth(storeId));
+
+        // All pending purchase orders count
+        statsDTO.setPendingPurchaseOrderCount(purchaseOrderRepository.countByStoreIdAndStatus(storeId, OrderStatus.PENDING));
+
+        // All inventories at threshold count
+        statsDTO.setInventoriesAtThresholdCount(inventoryRepository.countByStoreIdAndQuantityAtThreshold(storeId));
+
+        return statsDTO;
+    }
 }
 

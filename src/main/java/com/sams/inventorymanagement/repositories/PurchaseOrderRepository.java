@@ -13,4 +13,6 @@ import java.util.UUID;
 @Repository
 public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, UUID> {
     long countByStatus(OrderStatus status);
+
+    long countByStoreIdAndStatus(Long storeId, OrderStatus orderStatus);
 }
