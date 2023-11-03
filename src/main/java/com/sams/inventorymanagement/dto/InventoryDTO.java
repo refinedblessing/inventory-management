@@ -4,6 +4,8 @@ import com.sams.inventorymanagement.entities.Inventory;
 import com.sams.inventorymanagement.entities.Item;
 import lombok.Getter;
 
+import java.time.LocalDate;
+
 @Getter
 public class InventoryDTO {
     private Long id;
@@ -11,6 +13,11 @@ public class InventoryDTO {
     private StoreDTO store;
     private Integer quantity;
     private Integer threshold;
+    private LocalDate lastUpdated;
+
+    public void setLastUpdated(LocalDate lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -32,12 +39,13 @@ public class InventoryDTO {
         this.threshold = threshold;
     }
 
-    public InventoryDTO(Long id, Item item, StoreDTO store, Integer quantity, Integer threshold) {
+    public InventoryDTO(Long id, Item item, StoreDTO store, Integer quantity, Integer threshold, LocalDate lastUpdated) {
         this.id = id;
         this.item = item;
         this.store = store;
         this.quantity = quantity;
         this.threshold = threshold;
+        this.lastUpdated = lastUpdated;
     }
 
     public static InventoryDTO fromInventory(Inventory inventory) {
@@ -46,6 +54,7 @@ public class InventoryDTO {
                 inventory.getItem(),
                 StoreDTO.fromStore(inventory.getStore()),
                 inventory.getQuantity(),
-                inventory.getThreshold());
+                inventory.getThreshold(),
+                inventory.getLastUpdated());
     }
 }
