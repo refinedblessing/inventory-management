@@ -25,6 +25,9 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     @Query("SELECT i FROM Inventory i WHERE i.quantity <= i.threshold")
     List<Inventory> findAllWhereQuantityLessThanOrEqualThreshold();
 
+    @Query("SELECT COUNT(i) FROM Inventory i WHERE i.quantity <= i.threshold")
+    long countByQuantityAtThreshold();
+
     // Find inventory by store
     List<Inventory> findByStore(Store store);
 

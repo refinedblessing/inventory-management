@@ -55,4 +55,19 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
      * @return An optional containing the item if found, or an empty optional.
      */
     Optional<Item> findByName(String name);
+
+    @Query("SELECT i " +
+            "FROM Item i " +
+            "JOIN PurchaseOrderItem poi " +
+            "ON i.id = poi.item.id " +
+            "GROUP BY i.id " +
+            "ORDER BY SUM(poi.quantity) DESC LIMIT 1")
+    Item findMostPopularItemInPurchaseOrders();
+
+    @Query("SELECT i " +
+            "FROM Item i " +
+            "JOIN Inventory inv " +
+            "ON i.id = inv.item.id " +
+            "ORDER BY inv.quantity DESC LIMIT 1")
+    Item findMostPopularItemInInventory();
 }
