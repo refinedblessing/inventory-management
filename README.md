@@ -37,7 +37,6 @@ This Inventory Management Application is an API designed to help businesses mana
 - [Usage](#usage)
 - [API Documentation](#api-documentation)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Getting Started
 
@@ -57,7 +56,7 @@ Before you begin, ensure you have met the following requirements:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/inventory-management.git
+   git clone https://github.com/refinedblessing/inventory-management.git
 
 2. Navigate to the project directory:
     ```bash
@@ -79,4 +78,4 @@ Use the web interface to create, update, or delete categories, items, stores, an
 Manage your inventory, view purchase orders, and track your suppliers.
 
 ### API Documentation
-We use swagger ui http://localhost:8080/swagger-ui/index.html#/
+We use swagger ui https://inventory-master.azurewebsites.net/swagger-ui/index.html#/
