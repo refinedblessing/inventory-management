@@ -34,7 +34,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     @Override
     public PurchaseOrder getPurchaseOrderById(UUID id) {
-        return purchaseOrderRepository.findById(id).orElse(null);
+        return purchaseOrderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Purchase Order not found"));
     }
 
     @Override
@@ -52,8 +52,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 //    purchase order items will be updated through the purchase order items route for now
     @Override
     public PurchaseOrder updatePurchaseOrder(UUID id, PurchaseOrder updatedPurchaseOrder) {
-        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Purchase Order not found"));
+        PurchaseOrder purchaseOrder = getPurchaseOrderById(id);
 
 //        Only make changes to undelivered orders
         OrderStatus currentStatus = purchaseOrder.getStatus();
