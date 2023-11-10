@@ -6,6 +6,7 @@ import com.sams.inventorymanagement.services.PurchaseOrderItemService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/purchase-orders-items")
-public class PurchaseOrderItemController {
+public class PurchaseOrderItemController extends BaseController {
 
     /**
      * Service for handling purchase order item-related operations.
@@ -41,6 +42,9 @@ public class PurchaseOrderItemController {
      */
     @PostMapping
     public PurchaseOrderItemDTO createPurchaseOrderItem(@Valid @RequestBody PurchaseOrderItem purchaseOrderItem) {
+        if (isNotStoreStaff(purchaseOrderItem.getPurchaseOrder().getStore())) {
+            throw new AccessDeniedException("Purchase Order's Store not available to this user");
+        }
         PurchaseOrderItem createdPurchaseOrderItem = purchaseOrderItemService.createPurchaseOrderItem(purchaseOrderItem);
         return purchaseOrderItemService.mapToDTO(createdPurchaseOrderItem);
     }
@@ -80,6 +84,9 @@ public class PurchaseOrderItemController {
      */
     @PutMapping("/{id}")
     public PurchaseOrderItemDTO updatePurchaseOrderItem(@PathVariable Long id, @Valid @RequestBody PurchaseOrderItem updatedPurchaseOrderItem) {
+        if (isNotStoreStaff(updatedPurchaseOrderItem.getPurchaseOrder().getStore())) {
+            throw new AccessDeniedException("Purchase Order's Store not available to this user");
+        }
         return purchaseOrderItemService.mapToDTO(purchaseOrderItemService.updatePurchaseOrderItem(id, updatedPurchaseOrderItem));
     }
 
@@ -90,6 +97,10 @@ public class PurchaseOrderItemController {
      */
     @DeleteMapping("/{id}")
     public void deletePurchaseOrderItem(@PathVariable Long id) {
+        PurchaseOrderItem purchaseOrderItem = purchaseOrderItemService.getPurchaseOrderItemById(id);
+        if (isNotStoreStaff(purchaseOrderItem.getPurchaseOrder().getStore())) {
+            throw new AccessDeniedException("Purchase Order's Store not available to this user");
+        }
         purchaseOrderItemService.deletePurchaseOrderItem(id);
     }
 }
