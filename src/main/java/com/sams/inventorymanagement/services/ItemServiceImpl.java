@@ -3,6 +3,7 @@ import com.sams.inventorymanagement.entities.Category;
 import com.sams.inventorymanagement.entities.Item;
 import com.sams.inventorymanagement.entities.Supplier;
 import com.sams.inventorymanagement.exceptions.EntityDuplicateException;
+import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
 import com.sams.inventorymanagement.repositories.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,12 +28,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item getItemById(Long id) {
-        return itemRepository.findById(id).orElse(null);
+        return itemRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Item not found"));
     }
 
     @Override
     public Item getItemByName(String name) {
-        return itemRepository.findByName(name).orElse(null);
+        return itemRepository.findByName(name).orElseThrow(() -> new EntityNotFoundException("Item not found"));
     }
 
     @Override
