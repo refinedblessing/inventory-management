@@ -1,7 +1,6 @@
 package com.sams.inventorymanagement.controllers;
 
 import com.sams.inventorymanagement.dto.InventoryDTO;
-import com.sams.inventorymanagement.entities.AppUser;
 import com.sams.inventorymanagement.entities.Inventory;
 import com.sams.inventorymanagement.entities.Store;
 import com.sams.inventorymanagement.enums.StoreType;
@@ -9,11 +8,12 @@ import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
 import com.sams.inventorymanagement.services.StoreService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,38 +47,25 @@ public class StoreController extends BaseController {
             @RequestParam(required = false) StoreType type,
             @RequestParam(required = false) LocalDate openingDate
     ) {
-        AppUser user = getCurrentUser();
         boolean hasSearchCriteria = name != null || address != null || type != null || openingDate != null;
 
         if (hasSearchCriteria) {
-            //        TODO remove after fully implementing add store to user on frontend
-            if (isAdmin()) {
-                return storeService.searchStoresByCriteria(name, address, type, openingDate);
-            }
-
-            return storeService.searchStoresByCriteriaForUser(name,address, type, openingDate, user.getId());
+            return storeService.searchStoresByCriteria(name, address, type, openingDate);
         } else {
-            if (isAdmin()) {
-                return storeService.getAllStores();
-            }
-
-            return new ArrayList<>(user.getStores());
+            return storeService.getAllStores();
         }
     }
 
     @GetMapping
     public List<Store> getAllStores() {
-        AppUser user = getCurrentUser();
-
-//        TODO remove after fully implementing add store to user on frontend
-        if (isAdmin()) {
-            return storeService.getAllStores();
-        }
-
-        return new ArrayList<>(user.getStores());
+        return storeService.getAllStores();
     }
 
-//    TODO update other methods to only send store info associated with current User
+//    @GetMapping
+//    public List<Store> getAllUserStores() {
+//        return storeService.getAllStores();
+//    }
+
     /**
      * Retrieve a store by its unique identifier.
      *
@@ -108,10 +95,10 @@ public class StoreController extends BaseController {
      * @param store The store to create.
      * @return The created store.
      */
-    @Secured("ROLE_ADMIN")
     @PostMapping
-    public Store createStore(@Valid @RequestBody Store store) {
-        return storeService.createStore(store);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Store> createStore(@Valid @RequestBody Store store) {
+        return new ResponseEntity<>(storeService.createStore(store), HttpStatus.OK);
     }
 
     /**
@@ -121,10 +108,10 @@ public class StoreController extends BaseController {
      * @param updatedStore The updated store information.
      * @return The updated store.
      */
-    @Secured("ROLE_ADMIN")
     @PutMapping("/{id}")
-    public Store updateStore(@PathVariable Long id, @Valid @RequestBody Store updatedStore) {
-        return storeService.updateStore(id, updatedStore);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Store> updateStore(@PathVariable Long id, @Valid @RequestBody Store updatedStore) {
+        return new ResponseEntity<>(storeService.updateStore(id, updatedStore), HttpStatus.OK);
     }
 
     /**
@@ -132,9 +119,10 @@ public class StoreController extends BaseController {
      *
      * @param id The ID of the store to delete.
      */
-    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{id}")
-    public void deleteStore(@PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Object> deleteStore(@PathVariable Long id) {
         storeService.deleteStore(id);
+        return null;
     }
 }
