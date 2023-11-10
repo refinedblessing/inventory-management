@@ -6,6 +6,7 @@ import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
 import com.sams.inventorymanagement.services.InventoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/inventories")
-public class InventoryController {
+public class InventoryController extends BaseController {
 
     /**
      * Service for handling inventory-related operations.
@@ -33,12 +34,7 @@ public class InventoryController {
      */
     @GetMapping("/{id}")
     public InventoryDTO getInventoryById(@PathVariable Long id) {
-        Inventory inventory = inventoryService.getInventoryById(id);
-
-        if(inventory == null)
-            throw new EntityNotFoundException("Inventory not found");
-
-        return InventoryDTO.fromInventory(inventory);
+        return InventoryDTO.fromInventory(inventoryService.getInventoryById(id));
     }
 
     /**
@@ -61,21 +57,29 @@ public class InventoryController {
      */
     @PutMapping("/{id}")
     public InventoryDTO updateInventory(@PathVariable Long id, @Valid @RequestBody Inventory updatedInventory) {
-        Inventory inventory = inventoryService.updateInventory(id, updatedInventory);
+        Inventory inventory = inventoryService.getInventoryById(id);
 
-        if(inventory == null)
-            throw new EntityNotFoundException("Inventory not found");
+        if (isNotStoreStaff(inventory.getStore())) {
+            throw new AccessDeniedException("Inventory's Store not available to this user");
+        }
 
-        return InventoryDTO.fromInventory(inventory);
+        return InventoryDTO.fromInventory(inventoryService.updateInventory(id, updatedInventory));
     }
 
     /**
      * Delete an inventory by its ID.
      *
      * @param id The ID of the inventory to delete.
+     *
      */
     @DeleteMapping("/{id}")
     public void deleteInventory(@PathVariable Long id) {
+        Inventory inventory = inventoryService.getInventoryById(id);
+
+        if (isNotStoreStaff(inventory.getStore())) {
+            throw new AccessDeniedException("Inventory's Store not available to this user");
+        }
+
         inventoryService.deleteInventory(id);
     }
 
@@ -87,7 +91,6 @@ public class InventoryController {
     @GetMapping("/threshold")
     public List<InventoryDTO> getAllInventoriesAtThreshold() {
         List<Inventory> inventories = inventoryService.findInventoriesAtThreshold();
-
         return inventories.stream().map(InventoryDTO::fromInventory).collect(Collectors.toList());
     }
 }
