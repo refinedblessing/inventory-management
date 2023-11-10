@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -57,6 +58,7 @@ public class CategoryController {
      * @return The created category.
      */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public Category createCategory(@Valid @RequestBody Category category) {
         return categoryService.createCategory(category);
     }
@@ -69,6 +71,7 @@ public class CategoryController {
      * @return The updated category or returns a not found response if not updated.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Category> updateCategory(@PathVariable Long id, @Valid @RequestBody Category category) {
         Category updatedCategory = categoryService.updateCategory(id, category);
         if (updatedCategory != null) {
@@ -84,6 +87,7 @@ public class CategoryController {
      * @param id The ID of the category to delete.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
     }
