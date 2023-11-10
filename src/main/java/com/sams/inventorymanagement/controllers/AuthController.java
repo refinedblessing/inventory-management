@@ -44,7 +44,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@Valid @RequestBody LogInRequest logInRequest) {
-//        TODO find user in db before authenticating
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(logInRequest.getUsername(), logInRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

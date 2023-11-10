@@ -87,7 +87,6 @@ public class AppUser {
     private Set<UserRole> roles = new HashSet<>();
 
     @ManyToMany(mappedBy = "users")
-    @JsonIgnore
     private Set<Store> stores = new HashSet<>();
 
     public boolean isAdmin() {
@@ -102,6 +101,7 @@ public class AppUser {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.roles = AuthorityMapper.mapAuthoritiesToUserRole(user.getAuthorities());
+        this.stores = user.getStores();
     }
 
     public AppUser(SignUpRequest user) {
