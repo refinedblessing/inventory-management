@@ -3,6 +3,7 @@ package com.sams.inventorymanagement.services;
 import com.sams.inventorymanagement.entities.Inventory;
 import com.sams.inventorymanagement.entities.Item;
 import com.sams.inventorymanagement.entities.Store;
+import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
 import com.sams.inventorymanagement.repositories.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -87,7 +88,7 @@ public class InventoryService {
      * @return The inventory record if found, or null if it doesn't exist.
      */
     public Inventory getInventoryById(Long id) {
-        return inventoryRepository.findById(id).orElse(null);
+        return inventoryRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Inventory not found"));
     }
 
     public List<Inventory> findInventoryByStore(Store store) {
