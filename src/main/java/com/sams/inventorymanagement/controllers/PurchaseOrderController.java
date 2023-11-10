@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,6 +50,9 @@ public class PurchaseOrderController extends BaseController {
      */
     @PostMapping
     public PurchaseOrderMaxDTO createPurchaseOrder(@Valid @RequestBody PurchaseOrder purchaseOrder) {
+        if (isNotStoreStaff(purchaseOrder.getStore())) {
+            throw new AccessDeniedException("Purchase Order's Store not available to this user");
+        }
         PurchaseOrder createdPurchaseOrder = purchaseOrderService.createPurchaseOrder(purchaseOrder);
         return PurchaseOrderMaxDTO.fromPurchaseOrder(createdPurchaseOrder);
     }
@@ -88,6 +92,10 @@ public class PurchaseOrderController extends BaseController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<PurchaseOrderMaxDTO> updatePurchaseOrder(@PathVariable UUID id, @Valid @RequestBody PurchaseOrder purchaseOrder) {
+        if (isNotStoreStaff(purchaseOrder.getStore())) {
+            throw new AccessDeniedException("Purchase Order's Store not available to this user");
+        }
+
 //        check if the status is being changed to approved/canceled and make sure the user is a manager or admin
         OrderStatus status = purchaseOrder.getStatus();
         if ((status.equals(OrderStatus.APPROVED) || (status.equals(OrderStatus.CANCELED))) && (!isAdmin() && !isManager())) {
@@ -110,6 +118,10 @@ public class PurchaseOrderController extends BaseController {
      */
     @DeleteMapping("/{id}")
     public void deletePurchaseOrder(@PathVariable UUID id) {
+        PurchaseOrder purchaseOrder = purchaseOrderService.getPurchaseOrderById(id);
+        if (isNotStoreStaff(purchaseOrder.getStore())) {
+            throw new AccessDeniedException("Purchase Order's Store not available to this user");
+        }
         purchaseOrderService.deletePurchaseOrder(id);
     }
 }
