@@ -1,11 +1,10 @@
 package com.sams.inventorymanagement.controllers;
 
 import com.sams.inventorymanagement.entities.Item;
-import com.sams.inventorymanagement.exceptions.EntityNotFoundException;
 import com.sams.inventorymanagement.services.ItemService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/items")
-public class ItemController {
+public class ItemController extends BaseController {
 
     /**
      * Service for handling item-related operations.
@@ -61,12 +60,7 @@ public class ItemController {
      */
     @GetMapping("/{id}")
     public Item getItemById(@PathVariable Long id) {
-        Item item = itemService.getItemById(id);
-
-        if (item == null)
-            throw new EntityNotFoundException("id: " + id);
-
-        return item;
+        return itemService.getItemById(id);
     }
 
     /**
@@ -75,8 +69,8 @@ public class ItemController {
      * @param item The item to create.
      * @return The created item.
      */
-    @Secured("ROLE_ADMIN")
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public Item createItem(@Valid @RequestBody Item item) {
         return itemService.createItem(item);
     }
@@ -88,8 +82,8 @@ public class ItemController {
      * @param updatedItem The updated item.
      * @return The updated item.
      */
-    @Secured("ROLE_ADMIN")
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Item updateItem(@PathVariable Long id, @Valid @RequestBody Item updatedItem) {
         return itemService.updateItem(id, updatedItem);
     }
@@ -99,8 +93,8 @@ public class ItemController {
      *
      * @param id The ID of the item to delete.
      */
-    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteItem(@PathVariable Long id) {
         itemService.deleteItem(id);
     }
