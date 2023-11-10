@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -120,6 +121,9 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
             return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         } else if (ex instanceof DataIntegrityViolationException) {
             error.setMessage("Action violates Data Integrity");
+            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        } else if (ex instanceof AccessDeniedException) {
+            error.setMessage("Not Authorized to perform this action.");
             return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         } else if (ex instanceof BadCredentialsException) {
             error.setMessage("Authentication Credentials rejected");
