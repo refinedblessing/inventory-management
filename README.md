@@ -34,14 +34,14 @@ This Inventory Management Application is an API designed to help businesses mana
     - [Installation](#installation)
 - [Usage](#usage)
 - [API Documentation](#api-documentation)
-- [Contributing](#contributing)
 
 ## Getting Started
 
-- **Hosting**: API is currently hosted on Azure Web Apps [here](https://inventory-master.azurewebsites.net) and the Swagger ui [here](https://inventory-master.azurewebsites.net/swagger-ui/index.html#/)
-- If you are not seeing any data from the backend, try to logout, hard reload and log back in, the server can be a bit slow.
+### Hosting
 
-- **Frontend**: A User interface built using Next.js React Framework, Typescript and TailwindCSS, the [repository](https://github.com/refinedblessing/inventory-management-frontend), hosted on Vercel [here](https://inventory-management-frontend-liart.vercel.app). *Not all endpoints have been implemented yet*
+- **Frontend**: A User interface built using Next.js React Framework, Typescript and TailwindCSS, the [repository](https://github.com/refinedblessing/inventory-management-frontend), hosted on Vercel [here](https://inventory-management-frontend-liart.vercel.app).
+- **Backend**: API is currently hosted on Azure Web Apps [here](https://inventory-master.azurewebsites.net) with a Swagger UI [here](https://inventory-master.azurewebsites.net/swagger-ui/index.html#/)
+- If you are not seeing any data from the backend, please be patient, the free tier on Azure is very very slow on the first request, you should see a loading icon on the Frontend while the request is being processed.
 
 ### Prerequisites
 
@@ -77,4 +77,4 @@ Use the web interface to create, update, or delete categories, items, stores, an
 Manage your inventory, view purchase orders, and track your suppliers.
 
 ### API Documentation
-We use swagger ui https://inventory-master.azurewebsites.net/swagger-ui/index.html#/
+I use Swagger UI https://inventory-master.azurewebsites.net/swagger-ui/index.html#/
