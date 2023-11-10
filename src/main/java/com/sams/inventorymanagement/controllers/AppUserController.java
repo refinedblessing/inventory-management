@@ -110,7 +110,7 @@ public class AppUserController extends BaseController {
         if (user != null) {
             if (user.isAdmin()) {
                 if (!(getCurrentUser().getId().equals(user.getId()))) {
-                    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
             }
             appUserService.deleteUser(id);
