@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class SupplierController {
      * @return The created supplier.
      */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public Supplier createSupplier(@Valid @RequestBody Supplier supplier) {
         return supplierService.createSupplier(supplier);
     }
@@ -48,6 +50,7 @@ public class SupplierController {
      * @return The updated supplier, or a not found response if not found.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Supplier> updateSupplier(@PathVariable Long id, @Valid @RequestBody Supplier supplier) {
         Supplier updatedSupplier = supplierService.updateSupplier(id, supplier);
         if (updatedSupplier != null) {
@@ -64,6 +67,7 @@ public class SupplierController {
      * @return A no-content response if deleted successfully.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteSupplier(@PathVariable Long id) {
         supplierService.deleteSupplier(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
