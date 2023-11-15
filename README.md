@@ -47,6 +47,16 @@ This Inventory Management Application is an API designed to help businesses mana
     </a>
   </div>
 
+### Code and Technology Overview
+<div>
+    <a href="https://www.loom.com/share/22b779775b6c408eae0c70fac4c6c138">
+      <p>Code and Technology Overview - Watch Video</p>
+    </a>
+    <a href="https://www.loom.com/share/22b779775b6c408eae0c70fac4c6c138">
+      <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/22b779775b6c408eae0c70fac4c6c138-1700090937509-with-play.gif">
+    </a>
+  </div>
+
 ### Hosting
 
 - **Frontend**: A User interface built using Next.js React Framework, Typescript and TailwindCSS, the [repository](https://github.com/refinedblessing/inventory-management-frontend), hosted on Vercel [here](https://inventory-management-frontend-liart.vercel.app).
