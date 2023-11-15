@@ -44,9 +44,9 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    public List<Supplier> searchSuppliers(String name, String email, String phone, String categoryName, String address) {
-        return supplierRepository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrPhoneContainingIgnoreCaseOrCategoriesNameContainingIgnoreCaseOrAddressContainingIgnoreCase(
-                name, email, phone, categoryName, address
+    public List<Supplier> searchSuppliers(String name, String email, String phone, String address) {
+        return supplierRepository.searchWithCriteria(
+                name, email, phone, address
         );
     }
 

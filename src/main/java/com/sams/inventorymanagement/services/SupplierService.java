@@ -38,11 +38,10 @@ public interface SupplierService {
      * @param name        The name of the supplier (partial match).
      * @param email       The email address of the supplier (partial match).
      * @param phone       The phone number of the supplier (partial match).
-     * @param categoryName The name of the supplier's categories (partial match).
      * @param address     The address of the supplier (partial match).
      * @return A list of suppliers that match the specified criteria.
      */
-    List<Supplier> searchSuppliers(String name, String email, String phone, String categoryName, String address);
+    List<Supplier> searchSuppliers(String name, String email, String phone, String address);
 
     /**
      * Get a specific supplier by its ID.

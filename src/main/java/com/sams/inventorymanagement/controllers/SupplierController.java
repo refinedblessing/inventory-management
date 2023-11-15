@@ -88,9 +88,8 @@ public class SupplierController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String phone,
-            @RequestParam(required = false) String categoryName,
             @RequestParam(required = false) String address) {
-        return supplierService.searchSuppliers(name, email, phone, categoryName, address);
+        return supplierService.searchSuppliers(name, email, phone, address);
     }
 
     /**

@@ -2,6 +2,7 @@ package com.sams.inventorymanagement.repositories;
 
 import com.sams.inventorymanagement.entities.Supplier;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,15 +18,19 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
      * @param name         The name of the supplier (can be a partial match).
      * @param email        The email of the supplier (can be a partial match).
      * @param phone        The phone number of the supplier (can be a partial match).
-     * @param categoryName The name of the category supplied by the supplier (can be a partial match).
      * @param address      The address of the supplier (can be a partial match).
      * @return A list of suppliers that match the specified criteria.
      */
-    List<Supplier> findByNameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrPhoneContainingIgnoreCaseOrCategoriesNameContainingIgnoreCaseOrAddressContainingIgnoreCase(
+
+    @Query("SELECT s FROM Supplier s WHERE " +
+            "(:name IS NULL OR LOWER(s.name) LIKE %:name%) AND " +
+            "(:email IS NULL OR LOWER(s.email) LIKE %:email%) AND " +
+            "(:address IS NULL OR LOWER(s.address) LIKE %:address%) AND " +
+            "(:phone IS NULL OR s.phone LIKE %:phone%)")
+    List<Supplier> searchWithCriteria(
             String name,
             String email,
             String phone,
-            String categoryName,
             String address
     );
 
