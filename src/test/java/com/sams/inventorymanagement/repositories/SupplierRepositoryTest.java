@@ -1,6 +1,7 @@
 package com.sams.inventorymanagement.repositories;
 
 import com.sams.inventorymanagement.entities.Supplier;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -17,6 +19,37 @@ class SupplierRepositoryTest {
 
     @Autowired
     private SupplierRepository supplierRepository;
+
+    @Test
+    public void saveValidSupplier() {
+        Supplier supplier = new Supplier();
+        supplier.setName("Valid Supplier");
+        supplier.setPhone("1234567890");
+
+        Supplier savedSupplier = supplierRepository.save(supplier);
+
+        assertNotNull(savedSupplier.getId());
+        assertEquals("Valid Supplier", savedSupplier.getName());
+    }
+
+    @Test
+    public void saveSupplierWithInvalidEmail() {
+        Supplier supplier = new Supplier();
+        supplier.setName("Invalid Email Supplier");
+        supplier.setPhone("1234567890");
+        supplier.setEmail("invalid-email");
+
+        assertThrows(ConstraintViolationException.class, () -> supplierRepository.saveAndFlush(supplier));
+    }
+
+    @Test
+    public void saveSupplierWithInvalidPhone() {
+        Supplier supplier = new Supplier();
+        supplier.setName("Invalid Phone Supplier");
+        supplier.setPhone("invalid-phone");
+
+        assertThrows(ConstraintViolationException.class, () -> supplierRepository.saveAndFlush(supplier));
+    }
 
     @Test
     void testSearchWithCriteria_Success() {
