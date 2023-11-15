@@ -24,7 +24,7 @@ This Inventory Management Application is an API designed to help businesses mana
 
 - **Exception Handling**: Most Exceptions have been handled using a CustomizedErrorHandler.
 
-- **Testing**: TODO/WIP
+- **Testing**: WIP
 
 
 ## Table of Contents
@@ -36,6 +36,16 @@ This Inventory Management Application is an API designed to help businesses mana
 - [API Documentation](#api-documentation)
 
 ## Getting Started
+
+### Frontend Demo
+<div>
+    <a href="https://www.loom.com/share/ad8dea3f2aed4a94aa1309d26b03f108">
+      <p>Store Management Application Demo - Watch Video</p>
+    </a>
+    <a href="https://www.loom.com/share/ad8dea3f2aed4a94aa1309d26b03f108">
+      <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/ad8dea3f2aed4a94aa1309d26b03f108-with-play.gif">
+    </a>
+  </div>
 
 ### Hosting
 
