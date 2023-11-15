@@ -41,6 +41,7 @@ This Inventory Management Application is an API designed to help businesses mana
 
 - **Frontend**: A User interface built using Next.js React Framework, Typescript and TailwindCSS, the [repository](https://github.com/refinedblessing/inventory-management-frontend), hosted on Vercel [here](https://inventory-management-frontend-liart.vercel.app).
 - **Backend**: API is currently hosted on Azure Web Apps [here](https://inventory-master.azurewebsites.net) with a Swagger UI [here](https://inventory-master.azurewebsites.net/swagger-ui/index.html#/)
+- **Slide Show with Demo**: [Slide Show](https://docs.google.com/presentation/d/1Vc1hM2kyANVdmAZTuNA76hEWBr4ssqfux1Mdr82QCc0/edit?usp=sharing)
 - If you are not seeing any data from the backend, please be patient, the free tier on Azure is very very slow on the first request, you should see a loading icon on the Frontend while the request is being processed.
 
 ### Prerequisites
